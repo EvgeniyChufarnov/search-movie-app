@@ -6,6 +6,7 @@ interface Factory<T> {
     fun create(): T
 }
 
-class HomePresenterFactory(private val movieRepository: MovieRepository) : Factory<HomePresenter> {
+class HomePresenterFactory(private val movieRepository: MovieRepository) :
+    Factory<HomeScreenContract.HomePresenter> {
     override fun create() = HomePresenter(movieRepository)
 }

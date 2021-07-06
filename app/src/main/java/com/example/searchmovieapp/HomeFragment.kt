@@ -11,12 +11,12 @@ import com.example.searchmovieapp.adapters.MovieListAdapter
 import com.example.searchmovieapp.databinding.FragmentHomeBinding
 import com.example.searchmovieapp.entities.MovieEntity
 import com.example.searchmovieapp.injection.MovieApplication
-import com.example.searchmovieapp.presenters.HomePresenter
+import com.example.searchmovieapp.presenters.HomeScreenContract
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), HomeScreenContract.HomeView {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private lateinit var presenter: HomePresenter
+    private lateinit var presenter: HomeScreenContract.HomePresenter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,9 +31,8 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         createPresenter()
-
-        initRecyclerView(binding.nowPlayingRecyclerView, presenter.getNowPlayingMovies())
-        initRecyclerView(binding.upcomingRecyclerView, presenter.getUpcomingMovies())
+        presenter.attach(this)
+        presenter.getMovies()
     }
 
     private fun createPresenter() {
@@ -48,7 +47,16 @@ class HomeFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        presenter.detach()
+        super.onDestroyView()
+    }
+
+    override fun showNowPlaying(nowPlayingMovies: List<MovieEntity>) {
+        initRecyclerView(binding.nowPlayingRecyclerView, nowPlayingMovies)
+    }
+
+    override fun showUpcoming(upcomingMovies: List<MovieEntity>) {
+        initRecyclerView(binding.upcomingRecyclerView, upcomingMovies)
     }
 }

@@ -1,10 +1,12 @@
 package com.example.searchmovieapp.data
 
 import com.example.searchmovieapp.entities.MovieEntity
+import kotlinx.coroutines.delay
+import kotlin.random.Random
 
 interface RemoteDataSource {
-    fun getNowPlayingMovies(): List<MovieEntity>
-    fun getUpcomingMovies(): List<MovieEntity>
+    suspend fun getNowPlayingMovies(): List<MovieEntity>
+    suspend fun getUpcomingMovies(): List<MovieEntity>
 }
 
 class FakeRemoteDataSourceImpl: RemoteDataSource {
@@ -25,7 +27,17 @@ class FakeRemoteDataSourceImpl: RemoteDataSource {
         fakeMovies.add(MovieEntity(11, "A movie no one cares about", null, "1999-05-28", 4.0f, true))
     }
 
-    override fun getNowPlayingMovies() = fakeMovies.filter { !it.isUpcoming }
+    override suspend fun getNowPlayingMovies(): List<MovieEntity> {
+        imitateDelay()
+        return fakeMovies.filter { !it.isUpcoming }
+    }
 
-    override fun getUpcomingMovies() = fakeMovies.filter { it.isUpcoming }
+    override suspend fun getUpcomingMovies(): List<MovieEntity> {
+        imitateDelay()
+        return fakeMovies.filter { it.isUpcoming }
+    }
+
+    private suspend fun imitateDelay() {
+        delay(Random.nextLong(5000))
+    }
 }
