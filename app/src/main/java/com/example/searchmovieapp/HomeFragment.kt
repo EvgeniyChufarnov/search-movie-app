@@ -32,8 +32,8 @@ class HomeFragment : Fragment() {
 
         createPresenter()
 
-        initRecyclerView(binding.rvNowPlaying, presenter.getNowPlayingMovies())
-        initRecyclerView(binding.rvUpcoming, presenter.getUpcomingMovies())
+        initRecyclerView(binding.nowPlayingRecyclerView, presenter.getNowPlayingMovies())
+        initRecyclerView(binding.upcomingRecyclerView, presenter.getUpcomingMovies())
     }
 
     private fun createPresenter() {

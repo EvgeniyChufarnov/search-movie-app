@@ -47,14 +47,14 @@ class MovieListAdapter(private val dataSet: List<MovieEntity>) :
         }
 
         private fun setText(movie: MovieEntity) {
-            binding.tvTitle.text = movie.title
-            binding.tvRating.text = movie.voteAverage.toString()
-            binding.tvYear.text = movie.releaseYear
+            binding.titleTextView.text = movie.title
+            binding.ratingTextView.text = movie.voteAverage.toString()
+            binding.yearTextView.text = movie.releaseYear
         }
 
         private fun setPoster(path: String?) {
             if (path == null) {
-                binding.ivPoster.setImageResource(R.drawable.default_movie_poster)
+                binding.posterImageView.setImageResource(R.drawable.default_movie_poster)
             } else {
                 //todo set image via glide
             }
@@ -71,13 +71,13 @@ class MovieListAdapter(private val dataSet: List<MovieEntity>) :
         }
 
         private fun setText(movie: MovieEntity) {
-            binding.tvTitle.text = movie.title
-            binding.tvYear.text = movie.releaseDate
+            binding.titleTextView.text = movie.title
+            binding.yearTextView.text = movie.releaseDate
         }
 
         private fun setPoster(path: String?) {
             if (path == null) {
-                binding.ivPoster.setImageResource(R.drawable.default_movie_poster)
+                binding.posterImageView.setImageResource(R.drawable.default_movie_poster)
             } else {
                 //todo set image via glide
             }

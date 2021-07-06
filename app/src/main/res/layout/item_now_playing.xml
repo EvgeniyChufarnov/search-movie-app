@@ -11,53 +11,53 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/iv_poster"
+            android:id="@+id/poster_image_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:scaleType="centerCrop"
-            app:layout_constraintBottom_toTopOf="@id/tv_title"
+            app:layout_constraintBottom_toTopOf="@id/title_text_view"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_title"
+            android:id="@+id/title_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/short_margin"
             android:ellipsize="end"
             android:lines="2"
             android:maxLines="2"
-            app:layout_constraintBottom_toTopOf="@id/tv_year"
-            app:layout_constraintTop_toBottomOf="@id/iv_poster"
+            app:layout_constraintBottom_toTopOf="@id/year_text_view"
+            app:layout_constraintTop_toBottomOf="@id/poster_image_view"
             tools:text="Some movie title" />
 
         <TextView
-            android:id="@+id/tv_year"
+            android:id="@+id/year_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/short_margin"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_title"
+            app:layout_constraintTop_toBottomOf="@id/title_text_view"
             tools:text="2020" />
 
         <ImageView
-            android:id="@+id/iv_star"
+            android:id="@+id/star_image_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/short_margin"
             android:src="@drawable/ic_star"
-            app:layout_constraintBottom_toBottomOf="@id/tv_year"
-            app:layout_constraintEnd_toStartOf="@id/tv_rating"
-            app:layout_constraintTop_toTopOf="@id/tv_year" />
+            app:layout_constraintBottom_toBottomOf="@id/year_text_view"
+            app:layout_constraintEnd_toStartOf="@id/rating_text_view"
+            app:layout_constraintTop_toTopOf="@id/year_text_view" />
 
         <TextView
-            android:id="@+id/tv_rating"
+            android:id="@+id/rating_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/short_margin"
-            app:layout_constraintBottom_toBottomOf="@id/tv_year"
+            app:layout_constraintBottom_toBottomOf="@id/year_text_view"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_year"
+            app:layout_constraintTop_toTopOf="@id/year_text_view"
             tools:text="5.7" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
