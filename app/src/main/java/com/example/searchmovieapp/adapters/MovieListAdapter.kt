@@ -7,10 +7,13 @@ import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.ItemNowPlayingBinding
 import com.example.searchmovieapp.databinding.ItemUpcomingBinding
 import com.example.searchmovieapp.entities.MovieEntity
-import com.example.searchmovieapp.utils.releaseYear
 
 private const val NOW_PLAYING_MOVIE_TYPE = 0
 private const val UPCOMING_MOVIE_TYPE = 1
+
+private const val INDEX_OF_LAST_YEAR_CHAR = 3
+private val MovieEntity.releaseYear: String
+    get() = releaseDate.slice(0..INDEX_OF_LAST_YEAR_CHAR)
 
 class MovieListAdapter(private val dataSet: List<MovieEntity>) :
     RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
