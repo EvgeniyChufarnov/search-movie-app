@@ -1,5 +1,6 @@
 package com.example.searchmovieapp.data
 
+import com.example.searchmovieapp.entities.MovieDetailsEntity
 import com.example.searchmovieapp.entities.MovieEntity
 import kotlinx.coroutines.delay
 import kotlin.random.Random
@@ -7,10 +8,12 @@ import kotlin.random.Random
 interface RemoteDataSource {
     suspend fun getNowPlayingMovies(): List<MovieEntity>
     suspend fun getUpcomingMovies(): List<MovieEntity>
+    suspend fun getMovieDetailsById(movieId: Int): MovieDetailsEntity
 }
 
 class FakeRemoteDataSourceImpl: RemoteDataSource {
     private val fakeMovies = mutableListOf<MovieEntity>()
+    private val fakeDetails = mutableListOf<MovieDetailsEntity>()
 
     init {
         fakeMovies.add(MovieEntity(0, "First", null, "2020-05-28", 4.6f, false))
@@ -25,6 +28,9 @@ class FakeRemoteDataSourceImpl: RemoteDataSource {
         fakeMovies.add(MovieEntity(9, "Movie with a really long title, part two", null, "1974-05-28", 3.6f, true))
         fakeMovies.add(MovieEntity(10, "Popular movie", null, "1998-05-28", 5f, false))
         fakeMovies.add(MovieEntity(11, "A movie no one cares about", null, "1999-05-28", 4.0f, true))
+
+        fakeDetails.add(MovieDetailsEntity(0, "Some Movie", null, "la movie", 233, 500000, 400000,
+            listOf("comedy", "action"), "2002-05-28", 2f, 1254, "Just like any other movie"))
     }
 
     override suspend fun getNowPlayingMovies(): List<MovieEntity> {
@@ -35,6 +41,11 @@ class FakeRemoteDataSourceImpl: RemoteDataSource {
     override suspend fun getUpcomingMovies(): List<MovieEntity> {
         imitateDelay()
         return fakeMovies.filter { it.isUpcoming }
+    }
+
+    override suspend fun getMovieDetailsById(movieId: Int): MovieDetailsEntity {
+        imitateDelay()
+        return fakeDetails.random()
     }
 
     private suspend fun imitateDelay() {

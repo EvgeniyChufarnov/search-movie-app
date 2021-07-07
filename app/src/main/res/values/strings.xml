@@ -5,4 +5,9 @@
     <string name="home">Home</string>
     <string name="favorites">Favorites</string>
     <string name="ratings">Ratings</string>
+    <string name="ratings_with_vote_count">%1$.01f (%2$d)</string>
+    <string name="budget">Budget: %1$d$</string>
+    <string name="revenue">Revenue: %1$d$</string>
+    <string name="duration">%1$d min</string>
+    <string name="release_date">Release date: %1$s</string>
 </resources>

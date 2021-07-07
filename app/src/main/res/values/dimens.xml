@@ -3,4 +3,7 @@
     <dimen name="main_margin">8dp</dimen>
     <dimen name="movie_card_view_width">100dp</dimen>
     <dimen name="short_margin">4dp</dimen>
+    <dimen name="set_favorite_image_size">50dp</dimen>
+    <dimen name="movie_title_size">40sp</dimen>
+    <dimen name="poster_width">150dp</dimen>
 </resources>

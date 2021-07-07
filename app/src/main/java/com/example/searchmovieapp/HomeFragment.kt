@@ -1,5 +1,6 @@
 package com.example.searchmovieapp
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import com.example.searchmovieapp.contracts.HomeScreenContract
 import com.example.searchmovieapp.databinding.FragmentHomeBinding
 import com.example.searchmovieapp.entities.MovieEntity
 import com.example.searchmovieapp.injection.MovieApplication
+
 
 class HomeFragment : Fragment(),
     HomeScreenContract.View {
@@ -52,7 +54,7 @@ class HomeFragment : Fragment(),
     }
 
     private fun initRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.adapter = MovieListAdapter()
+        recyclerView.adapter = MovieListAdapter(this::navigateToMovieDetailFragment)
         recyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
@@ -80,5 +82,18 @@ class HomeFragment : Fragment(),
     private fun updateAdapterDataSet(adapter: MovieListAdapter, data: List<MovieEntity>) {
         adapter.setData(data)
         adapter.notifyDataSetChanged()
+    }
+
+    fun navigateToMovieDetailFragment(movieId: Int) {
+        (requireActivity() as Contract).navigateToMovieDetailFragment(movieId)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        check(activity is Contract) { "Activity must implement HomeFragment.Contract" }
+    }
+
+    interface Contract {
+        fun navigateToMovieDetailFragment(movieId: Int)
     }
 }

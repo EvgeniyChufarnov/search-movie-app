@@ -15,7 +15,7 @@ private const val INDEX_OF_LAST_YEAR_CHAR = 3
 private val MovieEntity.releaseYear: String
     get() = releaseDate.slice(0..INDEX_OF_LAST_YEAR_CHAR)
 
-class MovieListAdapter() :
+class MovieListAdapter(private val onMovieClicked: (Int) -> Unit) :
     RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
 
     private var dataSet: List<MovieEntity> = emptyList()
@@ -35,7 +35,7 @@ class MovieListAdapter() :
     }
 
     override fun onBindViewHolder(viewHolder: MovieViewHolder, position: Int) {
-        viewHolder.bind(dataSet[position])
+        viewHolder.bind(dataSet[position], onMovieClicked)
     }
 
     override fun getItemCount() = dataSet.size
@@ -43,16 +43,20 @@ class MovieListAdapter() :
     sealed class MovieViewHolder(viewGroup: ViewGroup, itemId: Int) : RecyclerView.ViewHolder(
         LayoutInflater.from(viewGroup.context).inflate(itemId, viewGroup, false)
     ) {
-        abstract fun bind(movie: MovieEntity)
+        abstract fun bind(movie: MovieEntity, onMovieClicked: (Int) -> Unit)
     }
 
     class NowPlayingMovieViewHolder(viewGroup: ViewGroup, itemId: Int = R.layout.item_now_playing) :
         MovieViewHolder(viewGroup, itemId) {
         private val binding = ItemNowPlayingBinding.bind(itemView)
 
-        override fun bind(movie: MovieEntity) {
+        override fun bind(movie: MovieEntity, onMovieClicked: (Int) -> Unit) {
             setText(movie)
             setPoster(movie.posterPath)
+
+            itemView.setOnClickListener {
+                onMovieClicked.invoke(movie.id)
+            }
         }
 
         private fun setText(movie: MovieEntity) {
@@ -74,9 +78,13 @@ class MovieListAdapter() :
         MovieViewHolder(viewGroup, itemId) {
         private val binding = ItemUpcomingBinding.bind(itemView)
 
-        override fun bind(movie: MovieEntity) {
+        override fun bind(movie: MovieEntity, onMovieClicked: (Int) -> Unit) {
             setText(movie)
             setPoster(movie.posterPath)
+
+            itemView.setOnClickListener {
+                onMovieClicked.invoke(movie.id)
+            }
         }
 
         private fun setText(movie: MovieEntity) {

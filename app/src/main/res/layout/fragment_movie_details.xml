@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/main_title_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/short_margin"
+            android:textSize="@dimen/movie_title_size"
+            app:layout_constraintEnd_toStartOf="@id/set_favorite_image_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Some movie title" />
+
+        <ImageView
+            android:id="@+id/set_favorite_image_view"
+            android:layout_width="@dimen/set_favorite_image_size"
+            android:layout_height="@dimen/set_favorite_image_size"
+            android:layout_margin="@dimen/short_margin"
+            android:src="@drawable/ic_favorite_border"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/main_title_text_view"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/original_title_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/short_margin"
+            app:layout_constraintTop_toBottomOf="@id/main_title_text_view"
+            tools:text="Original movie title" />
+
+        <ImageView
+            android:id="@+id/poster_image_view"
+            android:layout_width="@dimen/poster_width"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/short_margin"
+            app:layout_constraintDimensionRatio="1:1.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/original_title_text_view"
+            tools:src="@drawable/default_movie_poster" />
+
+        <TextView
+            android:id="@+id/genres_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/short_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/poster_image_view"
+            app:layout_constraintTop_toTopOf="@id/poster_image_view"
+            tools:text="comedy" />
+
+        <TextView
+            android:id="@+id/duration_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/short_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/poster_image_view"
+            app:layout_constraintTop_toBottomOf="@id/genres_text_view"
+            tools:text="117 min" />
+
+        <TextView
+            android:id="@+id/ratings_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/short_margin"
+            app:layout_constraintStart_toEndOf="@id/poster_image_view"
+            app:layout_constraintTop_toBottomOf="@id/duration_text_view"
+            tools:text="8.4 (7183)" />
+
+        <ImageView
+            android:id="@+id/star_image_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/short_margin"
+            android:src="@drawable/ic_star"
+            app:layout_constraintBottom_toBottomOf="@id/ratings_text_view"
+            app:layout_constraintStart_toEndOf="@id/ratings_text_view"
+            app:layout_constraintTop_toTopOf="@id/ratings_text_view" />
+
+        <TextView
+            android:id="@+id/budget_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/short_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/poster_image_view"
+            app:layout_constraintTop_toBottomOf="@id/ratings_text_view"
+            tools:text="Budget: 90000000 $" />
+
+        <TextView
+            android:id="@+id/revenue_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/short_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/poster_image_view"
+            app:layout_constraintTop_toBottomOf="@id/budget_text_view"
+            tools:text="Revenue: 90000000 $" />
+
+        <TextView
+            android:id="@+id/release_date_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/short_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/poster_image_view"
+            app:layout_constraintTop_toBottomOf="@id/revenue_text_view"
+            tools:text="Release date: 2018-12-06" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/poster_bottom_barrier"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="poster_image_view, release_date_text_view" />
+
+        <TextView
+            android:id="@+id/description_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/short_margin"
+            app:layout_constraintTop_toBottomOf="@id/poster_bottom_barrier"
+            tools:text="Bla bla bla" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
