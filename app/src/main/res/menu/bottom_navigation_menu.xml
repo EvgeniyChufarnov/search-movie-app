@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/item_home"
+        android:enabled="true"
+        android:icon="@drawable/ic_home"
+        android:title="@string/home" />
+    <item
+        android:id="@+id/item_favorites"
+        android:enabled="true"
+        android:icon="@drawable/ic_favorite_border"
+        android:title="@string/favorites" />
+    <item
+        android:id="@+id/item_ratings"
+        android:enabled="true"
+        android:icon="@drawable/ic_ratings"
+        android:title="@string/ratings" />
+</menu>
