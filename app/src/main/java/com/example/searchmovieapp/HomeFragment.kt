@@ -8,15 +8,16 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.searchmovieapp.adapters.MovieListAdapter
+import com.example.searchmovieapp.contracts.HomeScreenContract
 import com.example.searchmovieapp.databinding.FragmentHomeBinding
 import com.example.searchmovieapp.entities.MovieEntity
 import com.example.searchmovieapp.injection.MovieApplication
-import com.example.searchmovieapp.presenters.HomeScreenContract
 
-class HomeFragment : Fragment(), HomeScreenContract.HomeView {
+class HomeFragment : Fragment(),
+    HomeScreenContract.View {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private lateinit var presenter: HomeScreenContract.HomePresenter
+    private lateinit var presenter: HomeScreenContract.Presenter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,8 +32,8 @@ class HomeFragment : Fragment(), HomeScreenContract.HomeView {
         super.onViewCreated(view, savedInstanceState)
 
         createPresenter()
-        presenter.attach(this)
-        presenter.getMovies()
+        attachView()
+        initRecyclerViews()
     }
 
     private fun createPresenter() {
@@ -40,8 +41,18 @@ class HomeFragment : Fragment(), HomeScreenContract.HomeView {
         presenter = appContainer.homePresenterFactory.create()
     }
 
-    private fun initRecyclerView(recyclerView: RecyclerView, movies: List<MovieEntity>) {
-        recyclerView.adapter = MovieListAdapter(movies)
+    private fun attachView() {
+        presenter.attach(this)
+    }
+
+    private fun initRecyclerViews() {
+        initRecyclerView(binding.nowPlayingRecyclerView)
+        initRecyclerView(binding.upcomingRecyclerView)
+        presenter.getMovies()
+    }
+
+    private fun initRecyclerView(recyclerView: RecyclerView) {
+        recyclerView.adapter = MovieListAdapter()
         recyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
@@ -53,10 +64,21 @@ class HomeFragment : Fragment(), HomeScreenContract.HomeView {
     }
 
     override fun showNowPlaying(nowPlayingMovies: List<MovieEntity>) {
-        initRecyclerView(binding.nowPlayingRecyclerView, nowPlayingMovies)
+        updateAdapterDataSet(
+            binding.nowPlayingRecyclerView.adapter as MovieListAdapter,
+            nowPlayingMovies
+        )
     }
 
     override fun showUpcoming(upcomingMovies: List<MovieEntity>) {
-        initRecyclerView(binding.upcomingRecyclerView, upcomingMovies)
+        updateAdapterDataSet(
+            binding.upcomingRecyclerView.adapter as MovieListAdapter,
+            upcomingMovies
+        )
+    }
+
+    private fun updateAdapterDataSet(adapter: MovieListAdapter, data: List<MovieEntity>) {
+        adapter.setData(data)
+        adapter.notifyDataSetChanged()
     }
 }

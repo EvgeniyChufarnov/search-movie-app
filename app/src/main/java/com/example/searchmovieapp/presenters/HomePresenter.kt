@@ -1,30 +1,31 @@
 package com.example.searchmovieapp.presenters
 
+import com.example.searchmovieapp.contracts.HomeScreenContract
 import com.example.searchmovieapp.repositories.MovieRepository
 import kotlinx.coroutines.*
 
 class HomePresenter(private val movieRepository: MovieRepository) :
-    HomeScreenContract.HomePresenter {
+    HomeScreenContract.Presenter {
 
-    private var homeView: HomeScreenContract.HomeView? = null
+    private var view: HomeScreenContract.View? = null
     private val scope = CoroutineScope(Job() + Dispatchers.Main)
 
-    override fun attach(homeView: HomeScreenContract.HomeView) {
-        this.homeView = homeView
+    override fun attach(view: HomeScreenContract.View) {
+        this.view = view
     }
 
     override fun detach() {
-        homeView = null
+        view = null
         scope.cancel()
     }
 
     override fun getMovies() {
         scope.launch {
-            homeView?.showNowPlaying(getNowPlayingMovies())
+            view?.showNowPlaying(getNowPlayingMovies())
         }
 
         scope.launch {
-            homeView?.showUpcoming(getUpcomingMovies())
+            view?.showUpcoming(getUpcomingMovies())
         }
     }
 

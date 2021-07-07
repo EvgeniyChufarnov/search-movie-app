@@ -1,15 +1,15 @@
-package com.example.searchmovieapp.presenters
+package com.example.searchmovieapp.contracts
 
 import com.example.searchmovieapp.entities.MovieEntity
 
 interface HomeScreenContract {
-    interface HomeView {
+    interface View {
         fun showNowPlaying(nowPlayingMovies: List<MovieEntity>)
         fun showUpcoming(upcomingMovies: List<MovieEntity>)
     }
 
-    interface HomePresenter {
-        fun attach(homeView: HomeView)
+    interface Presenter {
+        fun attach(view: View)
         fun detach()
         fun getMovies()
     }

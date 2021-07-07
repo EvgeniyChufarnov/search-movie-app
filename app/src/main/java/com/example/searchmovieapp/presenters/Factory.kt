@@ -1,5 +1,6 @@
 package com.example.searchmovieapp.presenters
 
+import com.example.searchmovieapp.contracts.HomeScreenContract
 import com.example.searchmovieapp.repositories.MovieRepository
 
 interface Factory<T> {
@@ -7,6 +8,6 @@ interface Factory<T> {
 }
 
 class HomePresenterFactory(private val movieRepository: MovieRepository) :
-    Factory<HomeScreenContract.HomePresenter> {
+    Factory<HomeScreenContract.Presenter> {
     override fun create() = HomePresenter(movieRepository)
 }

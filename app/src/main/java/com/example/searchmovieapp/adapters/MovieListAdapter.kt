@@ -15,8 +15,14 @@ private const val INDEX_OF_LAST_YEAR_CHAR = 3
 private val MovieEntity.releaseYear: String
     get() = releaseDate.slice(0..INDEX_OF_LAST_YEAR_CHAR)
 
-class MovieListAdapter(private val dataSet: List<MovieEntity>) :
+class MovieListAdapter() :
     RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
+
+    private var dataSet: List<MovieEntity> = emptyList()
+
+    fun setData(movies: List<MovieEntity>) {
+        dataSet = movies
+    }
 
     override fun getItemViewType(position: Int): Int {
         return if (dataSet[position].isUpcoming) UPCOMING_MOVIE_TYPE else NOW_PLAYING_MOVIE_TYPE
