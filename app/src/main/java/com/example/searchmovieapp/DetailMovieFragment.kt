@@ -12,6 +12,7 @@ import com.example.searchmovieapp.injection.MovieApplication
 import kotlin.properties.Delegates
 
 private const val MOVIE_ID_EXTRA_KEY = "movie id"
+private const val STRINGS_SEPARATOR = ", "
 
 class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
     private var _binding: FragmentMovieDetailsBinding? = null
@@ -85,7 +86,7 @@ class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
         with(movieDetails) {
             binding.mainTitleTextView.text = title
             binding.originalTitleTextView.text = originalTitle
-            binding.genresTextView.text = genres.joinToString(", ")
+            binding.genresTextView.text = genres.joinToString(STRINGS_SEPARATOR)
             binding.budgetTextView.text = getString(R.string.budget, budget)
             binding.revenueTextView.text = getString(R.string.revenue, revenue)
             binding.releaseDateTextView.text = getString(R.string.release_date, releaseDate)
