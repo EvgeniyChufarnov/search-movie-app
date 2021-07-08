@@ -83,7 +83,7 @@ class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
     }
 
     override fun showDetails(movieDetails: MovieDetailsEntity) {
-        with(movieDetails) {
+        movieDetails.run {
             binding.mainTitleTextView.text = title
             binding.originalTitleTextView.text = originalTitle
             binding.genresTextView.text = genres.joinToString(STRINGS_SEPARATOR)
@@ -96,7 +96,7 @@ class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
                 voteAverage, voteCount
             )
 
-            movieDetails.runtime?.let {
+            runtime?.let {
                 binding.durationTextView.text = getString(R.string.duration, runtime)
             }
         }
