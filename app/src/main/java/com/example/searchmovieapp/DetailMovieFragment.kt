@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.searchmovieapp.contracts.MovieDetailsContract
 import com.example.searchmovieapp.databinding.FragmentMovieDetailsBinding
@@ -44,7 +45,7 @@ class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
         getMovieIdFromArguments()
         createPresenter()
         attachView()
-        hideUi()
+        showProgressBar()
         requestMovieDetails()
     }
 
@@ -63,11 +64,6 @@ class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
 
     private fun attachView() {
         presenter.attach(this)
-    }
-
-    private fun hideUi() {
-        binding.starImageView.visibility = View.GONE
-        binding.setFavoriteImageView.visibility = View.GONE
     }
 
     private fun requestMovieDetails() {
@@ -99,13 +95,16 @@ class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
             }
         }
 
-        showUI()
+        hideProgressBar()
         setPoster(movieDetails.posterPath)
     }
 
-    private fun showUI() {
-        binding.starImageView.visibility = View.VISIBLE
-        binding.setFavoriteImageView.visibility = View.VISIBLE
+    private fun showProgressBar() {
+        binding.loadingLayout.isVisible = true
+    }
+
+    private fun hideProgressBar() {
+        binding.loadingLayout.isVisible = false
     }
 
     private fun setPoster(path: String?) {

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,6 +36,8 @@ class HomeFragment : Fragment(),
 
         createPresenter()
         attachView()
+        showNowPlayingProgressBar()
+        showUpcomingProgressBar()
         initRecyclerViews()
     }
 
@@ -70,6 +73,7 @@ class HomeFragment : Fragment(),
             binding.nowPlayingRecyclerView.adapter as MovieListAdapter,
             nowPlayingMovies
         )
+        hideNowPlayingProgressBar()
     }
 
     override fun showUpcoming(upcomingMovies: List<MovieEntity>) {
@@ -77,6 +81,7 @@ class HomeFragment : Fragment(),
             binding.upcomingRecyclerView.adapter as MovieListAdapter,
             upcomingMovies
         )
+        hideUpcomingProgressBar()
     }
 
     private fun updateAdapterDataSet(adapter: MovieListAdapter, data: List<MovieEntity>) {
@@ -84,8 +89,24 @@ class HomeFragment : Fragment(),
         adapter.notifyDataSetChanged()
     }
 
-    fun navigateToMovieDetailFragment(movieId: Int) {
+    private fun navigateToMovieDetailFragment(movieId: Int) {
         (requireActivity() as Contract).navigateToMovieDetailFragment(movieId)
+    }
+
+    private fun showNowPlayingProgressBar() {
+        binding.nowPlayingProgressBar.isVisible = true
+    }
+
+    private fun hideNowPlayingProgressBar() {
+        binding.nowPlayingProgressBar.isVisible = false
+    }
+
+    private fun showUpcomingProgressBar() {
+        binding.upcomingProgressBar.isVisible = true
+    }
+
+    private fun hideUpcomingProgressBar() {
+        binding.upcomingProgressBar.isVisible = false
     }
 
     override fun onAttach(context: Context) {
