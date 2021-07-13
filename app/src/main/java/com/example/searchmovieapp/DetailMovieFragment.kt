@@ -22,12 +22,10 @@ class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
     private var movieId by Delegates.notNull<Int>()
 
     companion object Instance {
-        fun getInstance(movieId: Int): DetailMovieFragment {
-            val detailMovieFragment = DetailMovieFragment()
-            val bundle = Bundle()
-            bundle.putInt(MOVIE_ID_EXTRA_KEY, movieId)
-            detailMovieFragment.arguments = bundle
-            return detailMovieFragment
+        fun getInstance(movieId: Int) = DetailMovieFragment().apply {
+            arguments = Bundle().apply {
+                putInt(MOVIE_ID_EXTRA_KEY, movieId)
+            }
         }
     }
 
