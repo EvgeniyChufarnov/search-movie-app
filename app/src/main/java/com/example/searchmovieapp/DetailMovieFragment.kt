@@ -9,16 +9,20 @@ import androidx.fragment.app.Fragment
 import com.example.searchmovieapp.contracts.MovieDetailsContract
 import com.example.searchmovieapp.databinding.FragmentMovieDetailsBinding
 import com.example.searchmovieapp.entities.MovieDetailsEntity
-import com.example.searchmovieapp.injection.MovieApplication
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlin.properties.Delegates
 
 private const val MOVIE_ID_EXTRA_KEY = "movie id"
 private const val STRINGS_SEPARATOR = ", "
 
+@AndroidEntryPoint
 class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
     private var _binding: FragmentMovieDetailsBinding? = null
     private val binding get() = _binding!!
-    private lateinit var presenter: MovieDetailsContract.Presenter
+
+    @Inject
+    lateinit var presenter: MovieDetailsContract.Presenter
 
     private var movieId by Delegates.notNull<Int>()
 
@@ -43,7 +47,6 @@ class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
         super.onViewCreated(view, savedInstanceState)
 
         getMovieIdFromArguments()
-        createPresenter()
         attachView()
         showProgressBar()
         requestMovieDetails()
@@ -55,11 +58,6 @@ class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
                 movieId = getInt(MOVIE_ID_EXTRA_KEY)
             }
         }
-    }
-
-    private fun createPresenter() {
-        val appContainer = (requireActivity().application as MovieApplication).appContainer
-        presenter = appContainer.movieDetailsPresenterFactory.create()
     }
 
     private fun attachView() {

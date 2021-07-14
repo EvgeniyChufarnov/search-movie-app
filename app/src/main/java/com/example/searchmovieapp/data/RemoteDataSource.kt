@@ -3,6 +3,8 @@ package com.example.searchmovieapp.data
 import com.example.searchmovieapp.entities.MovieDetailsEntity
 import com.example.searchmovieapp.entities.MovieEntity
 import kotlinx.coroutines.delay
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.random.Random
 
 interface RemoteDataSource {
@@ -11,7 +13,8 @@ interface RemoteDataSource {
     suspend fun getMovieDetailsById(movieId: Int): MovieDetailsEntity
 }
 
-class FakeRemoteDataSourceImpl: RemoteDataSource {
+@Singleton
+class FakeRemoteDataSourceImpl @Inject constructor() : RemoteDataSource {
     private val fakeMovies = mutableListOf<MovieEntity>()
     private val fakeDetails = mutableListOf<MovieDetailsEntity>()
 

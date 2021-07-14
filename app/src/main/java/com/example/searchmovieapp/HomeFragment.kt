@@ -13,14 +13,17 @@ import com.example.searchmovieapp.adapters.MovieListAdapter
 import com.example.searchmovieapp.contracts.HomeScreenContract
 import com.example.searchmovieapp.databinding.FragmentHomeBinding
 import com.example.searchmovieapp.entities.MovieEntity
-import com.example.searchmovieapp.injection.MovieApplication
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class HomeFragment : Fragment(),
     HomeScreenContract.View {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private lateinit var presenter: HomeScreenContract.Presenter
+
+    @Inject
+    lateinit var presenter: HomeScreenContract.Presenter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,16 +37,10 @@ class HomeFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        createPresenter()
         attachView()
         showNowPlayingProgressBar()
         showUpcomingProgressBar()
         initRecyclerViews()
-    }
-
-    private fun createPresenter() {
-        val appContainer = (requireActivity().application as MovieApplication).appContainer
-        presenter = appContainer.homePresenterFactory.create()
     }
 
     private fun attachView() {

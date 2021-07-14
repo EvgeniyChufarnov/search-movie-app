@@ -1,7 +1,7 @@
 package com.example.searchmovieapp.injection
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 
-class MovieApplication : Application() {
-    val appContainer = AppContainer()
-}
+@HiltAndroidApp
+class MovieApplication : Application()
