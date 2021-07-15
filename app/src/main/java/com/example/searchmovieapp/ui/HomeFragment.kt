@@ -1,4 +1,4 @@
-package com.example.searchmovieapp
+package com.example.searchmovieapp.ui
 
 import android.content.Context
 import android.os.Bundle

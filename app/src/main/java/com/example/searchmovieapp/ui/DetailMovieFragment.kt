@@ -1,4 +1,4 @@
-package com.example.searchmovieapp
+package com.example.searchmovieapp.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import com.example.searchmovieapp.R
 import com.example.searchmovieapp.contracts.MovieDetailsContract
 import com.example.searchmovieapp.databinding.FragmentMovieDetailsBinding
 import com.example.searchmovieapp.entities.MovieDetailsEntity

@@ -1,4 +1,4 @@
-package com.example.searchmovieapp.injection
+package com.example.searchmovieapp.di
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

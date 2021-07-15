@@ -1,4 +1,4 @@
-package com.example.searchmovieapp.injection
+package com.example.searchmovieapp.di
 
 import com.example.searchmovieapp.contracts.HomeScreenContract
 import com.example.searchmovieapp.contracts.MovieDetailsContract

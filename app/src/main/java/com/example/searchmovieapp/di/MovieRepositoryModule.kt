@@ -1,4 +1,4 @@
-package com.example.searchmovieapp.injection
+package com.example.searchmovieapp.di
 
 import com.example.searchmovieapp.data.FakeRemoteDataSourceImpl
 import com.example.searchmovieapp.data.RemoteDataSource
@@ -8,12 +8,16 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-abstract class FakeDatabaseModule {
+abstract class DataSourceModule {
+    @Qualifier
+    annotation class FakeDataSource
 
+    @FakeDataSource
     @Singleton
     @Binds
     abstract fun bindFakeRemoteDataSource(impl: FakeRemoteDataSourceImpl): RemoteDataSource
@@ -22,9 +26,10 @@ abstract class FakeDatabaseModule {
 @InstallIn(SingletonComponent::class)
 @Module
 class MovieRepositoryModule {
-
     @Provides
-    fun provideMovieRepository(remoteDataSource: RemoteDataSource): MovieRepository {
+    fun provideMovieRepository(
+        @DataSourceModule.FakeDataSource remoteDataSource: RemoteDataSource
+    ): MovieRepository {
         return MovieRepository(remoteDataSource)
     }
 }

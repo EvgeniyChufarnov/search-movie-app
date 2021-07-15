@@ -1,4 +1,4 @@
-package com.example.searchmovieapp
+package com.example.searchmovieapp.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.FragmentNavigationContainerBinding
 
 class NavigationContainerFragment : Fragment() {

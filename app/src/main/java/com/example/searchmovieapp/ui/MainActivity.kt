@@ -1,7 +1,8 @@
-package com.example.searchmovieapp
+package com.example.searchmovieapp.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.searchmovieapp.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
