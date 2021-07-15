@@ -25,7 +25,7 @@ class NavigationContainerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.bottomNavigation.setOnNavigationItemSelectedListener(this::navigate)
+        binding.bottomNavigation.setOnItemSelectedListener(this::navigate)
 
         navigateToFragment(HomeFragment())
     }
