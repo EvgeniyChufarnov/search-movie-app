@@ -6,7 +6,7 @@ import com.example.searchmovieapp.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), HomeFragment.Contract {
+class MainActivity : AppCompatActivity(), HomeFragment.Contract, FavoritesFragment.Contract {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

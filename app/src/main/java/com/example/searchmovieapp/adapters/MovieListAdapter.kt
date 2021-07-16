@@ -15,13 +15,17 @@ private const val INDEX_OF_LAST_YEAR_CHAR = 3
 private val MovieEntity.releaseYear: String
     get() = releaseDate.slice(0..INDEX_OF_LAST_YEAR_CHAR)
 
-class MovieListAdapter(private val onMovieClicked: (Int) -> Unit) :
+class MovieListAdapter(
+    private val isLayoutManageVertical: Boolean,
+    private val onMovieClicked: (Int) -> Unit
+) :
     RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
 
     private var dataSet: List<MovieEntity> = emptyList()
 
     fun setData(movies: List<MovieEntity>) {
         dataSet = movies
+        notifyDataSetChanged()
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -35,7 +39,7 @@ class MovieListAdapter(private val onMovieClicked: (Int) -> Unit) :
     }
 
     override fun onBindViewHolder(viewHolder: MovieViewHolder, position: Int) {
-        viewHolder.bind(dataSet[position], onMovieClicked)
+        viewHolder.bind(dataSet[position], isLayoutManageVertical, onMovieClicked)
     }
 
     override fun getItemCount() = dataSet.size
@@ -43,14 +47,26 @@ class MovieListAdapter(private val onMovieClicked: (Int) -> Unit) :
     sealed class MovieViewHolder(viewGroup: ViewGroup, itemId: Int) : RecyclerView.ViewHolder(
         LayoutInflater.from(viewGroup.context).inflate(itemId, viewGroup, false)
     ) {
-        abstract fun bind(movie: MovieEntity, onMovieClicked: (Int) -> Unit)
+        abstract fun bind(
+            movie: MovieEntity,
+            isLayoutManageVertical: Boolean,
+            onMovieClicked: (Int) -> Unit
+        )
     }
 
     class NowPlayingMovieViewHolder(viewGroup: ViewGroup, itemId: Int = R.layout.item_now_playing) :
         MovieViewHolder(viewGroup, itemId) {
         private val binding = ItemNowPlayingBinding.bind(itemView)
 
-        override fun bind(movie: MovieEntity, onMovieClicked: (Int) -> Unit) {
+        override fun bind(
+            movie: MovieEntity,
+            isLayoutManageVertical: Boolean,
+            onMovieClicked: (Int) -> Unit
+        ) {
+            if (isLayoutManageVertical) {
+                switchToConstraintsForVerticalLayoutManager()
+            }
+
             setText(movie)
             setPoster(movie.posterPath)
 
@@ -72,13 +88,28 @@ class MovieListAdapter(private val onMovieClicked: (Int) -> Unit) :
                 //todo set image via glide
             }
         }
+
+        private fun switchToConstraintsForVerticalLayoutManager() {
+            binding.containerCardView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+            binding.containerCardView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            binding.containerLayout.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+            binding.containerLayout.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+        }
     }
 
     class UpcomingMovieViewHolder(viewGroup: ViewGroup, itemId: Int = R.layout.item_upcoming) :
         MovieViewHolder(viewGroup, itemId) {
         private val binding = ItemUpcomingBinding.bind(itemView)
 
-        override fun bind(movie: MovieEntity, onMovieClicked: (Int) -> Unit) {
+        override fun bind(
+            movie: MovieEntity,
+            isLayoutManageVertical: Boolean,
+            onMovieClicked: (Int) -> Unit
+        ) {
+            if (isLayoutManageVertical) {
+                switchToConstraintsForVerticalLayoutManager()
+            }
+
             setText(movie)
             setPoster(movie.posterPath)
 
@@ -98,6 +129,13 @@ class MovieListAdapter(private val onMovieClicked: (Int) -> Unit) :
             } else {
                 //todo set image via glide
             }
+        }
+
+        private fun switchToConstraintsForVerticalLayoutManager() {
+            binding.containerCardView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+            binding.containerCardView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            binding.containerLayout.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+            binding.containerLayout.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
         }
     }
 }

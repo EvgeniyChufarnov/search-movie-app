@@ -25,15 +25,21 @@ class NavigationContainerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.bottomNavigation.setOnItemSelectedListener(this::navigate)
+        binding.bottomNavigation.setOnItemSelectedListener(::navigate)
+    }
 
-        navigateToFragment(HomeFragment())
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        binding.bottomNavigation.run {
+            navigate(menu.findItem(selectedItemId))
+        }
     }
 
     private fun navigate(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.item_home -> navigateToFragment(HomeFragment())
-            R.id.item_favorites -> navigateToFragment(HomeFragment())
+            R.id.item_favorites -> navigateToFragment(FavoritesFragment())
             R.id.item_ratings -> navigateToFragment(HomeFragment())
         }
 

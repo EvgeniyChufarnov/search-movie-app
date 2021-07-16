@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.searchmovieapp.adapters.MovieListAdapter
-import com.example.searchmovieapp.contracts.HomeScreenContract
+import com.example.searchmovieapp.contracts.HomeContract
 import com.example.searchmovieapp.databinding.FragmentHomeBinding
 import com.example.searchmovieapp.entities.MovieEntity
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,12 +18,12 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(),
-    HomeScreenContract.View {
+    HomeContract.View {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
     @Inject
-    lateinit var presenter: HomeScreenContract.Presenter
+    lateinit var presenter: HomeContract.Presenter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,7 +54,7 @@ class HomeFragment : Fragment(),
     }
 
     private fun initRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.adapter = MovieListAdapter(this::navigateToMovieDetailFragment)
+        recyclerView.adapter = MovieListAdapter(false, this::navigateToMovieDetailFragment)
         recyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
@@ -83,7 +83,6 @@ class HomeFragment : Fragment(),
 
     private fun updateAdapterDataSet(adapter: MovieListAdapter, data: List<MovieEntity>) {
         adapter.setData(data)
-        adapter.notifyDataSetChanged()
     }
 
     private fun navigateToMovieDetailFragment(movieId: Int) {

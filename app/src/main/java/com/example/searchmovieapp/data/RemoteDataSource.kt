@@ -10,6 +10,7 @@ import kotlin.random.Random
 interface RemoteDataSource {
     suspend fun getNowPlayingMovies(): List<MovieEntity>
     suspend fun getUpcomingMovies(): List<MovieEntity>
+    suspend fun getFavoritesMovies(): List<MovieEntity>
     suspend fun getMovieDetailsById(movieId: Int): MovieDetailsEntity
 }
 
@@ -46,12 +47,17 @@ class FakeRemoteDataSourceImpl @Inject constructor() : RemoteDataSource {
         return fakeMovies.filter { it.isUpcoming }
     }
 
+    override suspend fun getFavoritesMovies(): List<MovieEntity> {
+        imitateDelay()
+        return fakeMovies
+    }
+
     override suspend fun getMovieDetailsById(movieId: Int): MovieDetailsEntity {
         imitateDelay()
         return fakeDetails.random()
     }
 
     private suspend fun imitateDelay() {
-        delay(Random.nextLong(5000))
+        delay(Random.nextLong(1000))
     }
 }
