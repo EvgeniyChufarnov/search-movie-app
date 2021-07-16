@@ -11,6 +11,7 @@ interface RemoteDataSource {
     suspend fun getNowPlayingMovies(): List<MovieEntity>
     suspend fun getUpcomingMovies(): List<MovieEntity>
     suspend fun getFavoritesMovies(): List<MovieEntity>
+    suspend fun getTopRatedMovies(): List<MovieEntity>
     suspend fun getMovieDetailsById(movieId: Int): MovieDetailsEntity
 }
 
@@ -29,12 +30,34 @@ class FakeRemoteDataSourceImpl @Inject constructor() : RemoteDataSource {
         fakeMovies.add(MovieEntity(6, "Bad Movie", null, "1958-05-28", 5.6f, false))
         fakeMovies.add(MovieEntity(7, "Really Bad Movie", null, "1999-05-28", 4.7f, true))
         fakeMovies.add(MovieEntity(8, "Russian Movie", null, "1997-05-28", 4.8f, false))
-        fakeMovies.add(MovieEntity(9, "Movie with a really long title, part two", null, "1974-05-28", 3.6f, true))
+        fakeMovies.add(
+            MovieEntity(
+                9,
+                "Movie with a really long title, part two",
+                null,
+                "1974-05-28",
+                3.6f,
+                true
+            )
+        )
         fakeMovies.add(MovieEntity(10, "Popular movie", null, "1998-05-28", 5f, false))
-        fakeMovies.add(MovieEntity(11, "A movie no one cares about", null, "1999-05-28", 4.0f, true))
+        fakeMovies.add(
+            MovieEntity(
+                11,
+                "A movie no one cares about",
+                null,
+                "1999-05-28",
+                4.0f,
+                true
+            )
+        )
 
-        fakeDetails.add(MovieDetailsEntity(0, "Some Movie", null, "la movie", 233, 500000, 400000,
-            listOf("comedy", "action"), "2002-05-28", 2f, 1254, "Just like any other movie"))
+        fakeDetails.add(
+            MovieDetailsEntity(
+                0, "Some Movie", null, "la movie", 233, 500000, 400000,
+                listOf("comedy", "action"), "2002-05-28", 2f, 1254, "Just like any other movie"
+            )
+        )
     }
 
     override suspend fun getNowPlayingMovies(): List<MovieEntity> {
@@ -50,6 +73,11 @@ class FakeRemoteDataSourceImpl @Inject constructor() : RemoteDataSource {
     override suspend fun getFavoritesMovies(): List<MovieEntity> {
         imitateDelay()
         return fakeMovies
+    }
+
+    override suspend fun getTopRatedMovies(): List<MovieEntity> {
+        imitateDelay()
+        return fakeMovies.filter { !it.isUpcoming }.sortedBy { -it.voteAverage }
     }
 
     override suspend fun getMovieDetailsById(movieId: Int): MovieDetailsEntity {

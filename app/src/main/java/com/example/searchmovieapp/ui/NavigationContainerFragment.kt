@@ -40,7 +40,7 @@ class NavigationContainerFragment : Fragment() {
         when (item.itemId) {
             R.id.item_home -> navigateToFragment(HomeFragment())
             R.id.item_favorites -> navigateToFragment(FavoritesFragment())
-            R.id.item_ratings -> navigateToFragment(HomeFragment())
+            R.id.item_ratings -> navigateToFragment(RatingsFragment())
         }
 
         return true

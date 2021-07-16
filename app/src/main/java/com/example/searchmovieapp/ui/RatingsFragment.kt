@@ -8,10 +8,9 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.searchmovieapp.adapters.MovieListAdapter
-import com.example.searchmovieapp.contracts.FavoritesContract
-import com.example.searchmovieapp.databinding.FragmentFavoritesBinding
+import com.example.searchmovieapp.contracts.RatingsContract
+import com.example.searchmovieapp.databinding.FragmentRatingsBinding
 import com.example.searchmovieapp.entities.MovieEntity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -19,19 +18,19 @@ import javax.inject.Inject
 private const val COLUMNS_NUM = 3
 
 @AndroidEntryPoint
-class FavoritesFragment : Fragment(), FavoritesContract.View {
-    private var _binding: FragmentFavoritesBinding? = null
+class RatingsFragment : Fragment(), RatingsContract.View {
+    private var _binding: FragmentRatingsBinding? = null
     private val binding get() = _binding!!
 
     @Inject
-    lateinit var presenter: FavoritesContract.Presenter
+    lateinit var presenter: RatingsContract.Presenter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
+        _binding = FragmentRatingsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -41,7 +40,7 @@ class FavoritesFragment : Fragment(), FavoritesContract.View {
         attachView()
         showProgressBar()
         initRecyclerView()
-        presenter.getMovies()
+        presenter.getTopRatedMovies()
     }
 
     private fun attachView() {
@@ -49,9 +48,9 @@ class FavoritesFragment : Fragment(), FavoritesContract.View {
     }
 
     private fun initRecyclerView() {
-        binding.favoriteMoviesRecyclerView.adapter =
+        binding.moviesRecyclerView.adapter =
             MovieListAdapter(true, this::navigateToMovieDetailFragment)
-        binding.favoriteMoviesRecyclerView.layoutManager =
+        binding.moviesRecyclerView.layoutManager =
             GridLayoutManager(requireContext(), COLUMNS_NUM, GridLayoutManager.VERTICAL, false)
     }
 
@@ -61,10 +60,10 @@ class FavoritesFragment : Fragment(), FavoritesContract.View {
         super.onDestroyView()
     }
 
-    override fun showFavorites(favoriteMovies: List<MovieEntity>) {
+    override fun showMovies(movies: List<MovieEntity>) {
         updateAdapterDataSet(
-            binding.favoriteMoviesRecyclerView.adapter as MovieListAdapter,
-            favoriteMovies
+            binding.moviesRecyclerView.adapter as MovieListAdapter,
+            movies
         )
         hideProgressBar()
     }
@@ -87,7 +86,7 @@ class FavoritesFragment : Fragment(), FavoritesContract.View {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        check(activity is Contract) { "Activity must implement Favorites.Contract" }
+        check(activity is Contract) { "Activity must implement RatingsFragment.Contract" }
     }
 
     interface Contract {
