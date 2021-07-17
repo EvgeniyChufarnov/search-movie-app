@@ -10,4 +10,5 @@
     <string name="revenue">Revenue: %1$d$</string>
     <string name="duration">%1$d min</string>
     <string name="release_date">Release date: %1$s</string>
+    <string name="no_favorites">You have not mark any movie as favorite yet</string>
 </resources>

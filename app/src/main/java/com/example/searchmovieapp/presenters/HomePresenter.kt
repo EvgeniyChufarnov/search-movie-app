@@ -36,4 +36,8 @@ class HomePresenter(private val movieRepository: MovieRepository) :
     private suspend fun getUpcomingMovies() = withContext(Dispatchers.IO) {
         movieRepository.getUpcomingMovies()
     }
+
+    override fun changeMovieFavoriteState(movieId: Int) {
+        movieRepository.changeMovieFavoriteState(movieId)
+    }
 }

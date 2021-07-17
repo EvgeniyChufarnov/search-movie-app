@@ -26,6 +26,7 @@ abstract class DataSourceModule {
 @InstallIn(SingletonComponent::class)
 @Module
 class MovieRepositoryModule {
+    @Singleton
     @Provides
     fun provideMovieRepository(
         @DataSourceModule.FakeDataSource remoteDataSource: RemoteDataSource

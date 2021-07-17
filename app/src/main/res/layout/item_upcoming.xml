@@ -24,6 +24,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/set_favorite_image_view"
+            android:layout_width="@dimen/set_favorite_image_size_small"
+            android:layout_height="@dimen/set_favorite_image_size_small"
+            android:layout_margin="@dimen/short_margin"
+            android:src="@drawable/ic_favorite_border"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/title_text_view"
             android:layout_width="0dp"

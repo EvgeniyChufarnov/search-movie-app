@@ -10,6 +10,7 @@ import com.example.searchmovieapp.R
 import com.example.searchmovieapp.contracts.MovieDetailsContract
 import com.example.searchmovieapp.databinding.FragmentMovieDetailsBinding
 import com.example.searchmovieapp.entities.MovieDetailsEntity
+import com.example.searchmovieapp.repositories.isFavorite
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.properties.Delegates
@@ -26,6 +27,7 @@ class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
     lateinit var presenter: MovieDetailsContract.Presenter
 
     private var movieId by Delegates.notNull<Int>()
+    private var isFavorite: Boolean = false
 
     companion object Instance {
         fun getInstance(movieId: Int) = DetailMovieFragment().apply {
@@ -50,6 +52,7 @@ class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
         getMovieIdFromArguments()
         attachView()
         showProgressBar()
+        setMakeFavoriteListener()
         requestMovieDetails()
     }
 
@@ -59,6 +62,20 @@ class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
                 movieId = getInt(MOVIE_ID_EXTRA_KEY)
             }
         }
+    }
+
+    private fun setMakeFavoriteListener() {
+        binding.setFavoriteImageView.setOnClickListener {
+            isFavorite = !isFavorite
+            presenter.changeMovieFavoriteState(movieId)
+            changeFavoriteButtonImage()
+        }
+    }
+
+    private fun changeFavoriteButtonImage() {
+        binding.setFavoriteImageView.setImageResource(
+            if (isFavorite) R.drawable.ic_favorite else R.drawable.ic_favorite_border
+        )
     }
 
     private fun attachView() {
@@ -92,6 +109,9 @@ class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
             runtime?.let {
                 binding.durationTextView.text = getString(R.string.duration, runtime)
             }
+
+            isFavorite = movieDetails.isFavorite()
+            changeFavoriteButtonImage()
         }
 
         hideProgressBar()
@@ -99,11 +119,11 @@ class DetailMovieFragment : Fragment(), MovieDetailsContract.View {
     }
 
     private fun showProgressBar() {
-        binding.loadingLayout.isVisible = true
+        binding.loadingProcessBar.isVisible = true
     }
 
     private fun hideProgressBar() {
-        binding.loadingLayout.isVisible = false
+        binding.loadingProcessBar.isVisible = false
     }
 
     private fun setPoster(path: String?) {

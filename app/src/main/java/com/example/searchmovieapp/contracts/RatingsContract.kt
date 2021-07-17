@@ -11,5 +11,6 @@ interface RatingsContract {
         fun attach(view: View)
         fun detach()
         fun getTopRatedMovies()
+        fun changeMovieFavoriteState(movieId: Int)
     }
 }

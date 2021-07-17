@@ -11,5 +11,6 @@ interface FavoritesContract {
         fun attach(view: View)
         fun detach()
         fun getMovies()
+        fun changeMovieFavoriteState(movieId: Int)
     }
 }

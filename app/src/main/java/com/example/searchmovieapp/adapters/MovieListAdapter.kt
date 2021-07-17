@@ -7,6 +7,7 @@ import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.ItemNowPlayingBinding
 import com.example.searchmovieapp.databinding.ItemUpcomingBinding
 import com.example.searchmovieapp.entities.MovieEntity
+import com.example.searchmovieapp.repositories.isFavorite
 
 private const val NOW_PLAYING_MOVIE_TYPE = 0
 private const val UPCOMING_MOVIE_TYPE = 1
@@ -17,7 +18,8 @@ private val MovieEntity.releaseYear: String
 
 class MovieListAdapter(
     private val isLayoutManageVertical: Boolean,
-    private val onMovieClicked: (Int) -> Unit
+    private val onMovieClicked: (Int) -> Unit,
+    private val onFavoriteClicked: (Int) -> Unit
 ) :
     RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
 
@@ -39,7 +41,7 @@ class MovieListAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: MovieViewHolder, position: Int) {
-        viewHolder.bind(dataSet[position], isLayoutManageVertical, onMovieClicked)
+        viewHolder.bind(dataSet[position], isLayoutManageVertical, onMovieClicked, onFavoriteClicked)
     }
 
     override fun getItemCount() = dataSet.size
@@ -50,7 +52,8 @@ class MovieListAdapter(
         abstract fun bind(
             movie: MovieEntity,
             isLayoutManageVertical: Boolean,
-            onMovieClicked: (Int) -> Unit
+            onMovieClicked: (Int) -> Unit,
+            onFavoriteClicked: (Int) -> Unit
         )
     }
 
@@ -61,7 +64,8 @@ class MovieListAdapter(
         override fun bind(
             movie: MovieEntity,
             isLayoutManageVertical: Boolean,
-            onMovieClicked: (Int) -> Unit
+            onMovieClicked: (Int) -> Unit,
+            onFavoriteClicked: (Int) -> Unit
         ) {
             if (isLayoutManageVertical) {
                 switchToConstraintsForVerticalLayoutManager()
@@ -69,9 +73,15 @@ class MovieListAdapter(
 
             setText(movie)
             setPoster(movie.posterPath)
+            changeFavoriteButtonImage(movie.isFavorite())
 
             itemView.setOnClickListener {
                 onMovieClicked.invoke(movie.id)
+            }
+
+            binding.setFavoriteImageView.setOnClickListener {
+                onFavoriteClicked.invoke(movie.id)
+                changeFavoriteButtonImage(movie.isFavorite())
             }
         }
 
@@ -89,6 +99,12 @@ class MovieListAdapter(
             }
         }
 
+        private fun changeFavoriteButtonImage(isFavorite: Boolean) {
+            binding.setFavoriteImageView.setImageResource(
+                if (isFavorite) R.drawable.ic_favorite else R.drawable.ic_favorite_border
+            )
+        }
+
         private fun switchToConstraintsForVerticalLayoutManager() {
             binding.containerCardView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
             binding.containerCardView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -104,7 +120,8 @@ class MovieListAdapter(
         override fun bind(
             movie: MovieEntity,
             isLayoutManageVertical: Boolean,
-            onMovieClicked: (Int) -> Unit
+            onMovieClicked: (Int) -> Unit,
+            onFavoriteClicked: (Int) -> Unit
         ) {
             if (isLayoutManageVertical) {
                 switchToConstraintsForVerticalLayoutManager()
@@ -112,9 +129,15 @@ class MovieListAdapter(
 
             setText(movie)
             setPoster(movie.posterPath)
+            changeFavoriteButtonImage(movie.isFavorite())
 
             itemView.setOnClickListener {
                 onMovieClicked.invoke(movie.id)
+            }
+
+            binding.setFavoriteImageView.setOnClickListener {
+                onFavoriteClicked.invoke(movie.id)
+                changeFavoriteButtonImage(movie.isFavorite())
             }
         }
 
@@ -129,6 +152,12 @@ class MovieListAdapter(
             } else {
                 //todo set image via glide
             }
+        }
+
+        private fun changeFavoriteButtonImage(isFavorite: Boolean) {
+            binding.setFavoriteImageView.setImageResource(
+                if (isFavorite) R.drawable.ic_favorite else R.drawable.ic_favorite_border
+            )
         }
 
         private fun switchToConstraintsForVerticalLayoutManager() {

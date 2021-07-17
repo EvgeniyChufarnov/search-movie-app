@@ -28,4 +28,8 @@ class RatingsPresenter(private val movieRepository: MovieRepository) :
     private suspend fun getMovies() = withContext(Dispatchers.IO) {
         movieRepository.getTopRatedMovies()
     }
+
+    override fun changeMovieFavoriteState(movieId: Int) {
+        movieRepository.changeMovieFavoriteState(movieId)
+    }
 }

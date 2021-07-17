@@ -11,5 +11,6 @@ interface MovieDetailsContract {
         fun attach(view: View)
         fun detach()
         fun getMovieDetails(movieId: Int)
+        fun changeMovieFavoriteState(movieId: Int)
     }
 }

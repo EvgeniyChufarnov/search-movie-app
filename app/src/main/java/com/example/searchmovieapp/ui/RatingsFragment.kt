@@ -49,7 +49,11 @@ class RatingsFragment : Fragment(), RatingsContract.View {
 
     private fun initRecyclerView() {
         binding.moviesRecyclerView.adapter =
-            MovieListAdapter(true, this::navigateToMovieDetailFragment)
+            MovieListAdapter(
+                true,
+                this::navigateToMovieDetailFragment,
+                this::changeMovieFavoriteState
+            )
         binding.moviesRecyclerView.layoutManager =
             GridLayoutManager(requireContext(), COLUMNS_NUM, GridLayoutManager.VERTICAL, false)
     }
@@ -73,15 +77,19 @@ class RatingsFragment : Fragment(), RatingsContract.View {
     }
 
     private fun showProgressBar() {
-        binding.loadingLayout.isVisible = true
+        binding.loadingProcessBar.isVisible = true
     }
 
     private fun hideProgressBar() {
-        binding.loadingLayout.isVisible = false
+        binding.loadingProcessBar.isVisible = false
     }
 
     private fun navigateToMovieDetailFragment(movieId: Int) {
         (requireActivity() as HomeFragment.Contract).navigateToMovieDetailFragment(movieId)
+    }
+
+    private fun changeMovieFavoriteState(movieId: Int) {
+        presenter.changeMovieFavoriteState(movieId)
     }
 
     override fun onAttach(context: Context) {

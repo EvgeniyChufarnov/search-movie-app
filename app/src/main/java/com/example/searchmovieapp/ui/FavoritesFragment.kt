@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.searchmovieapp.adapters.MovieListAdapter
 import com.example.searchmovieapp.contracts.FavoritesContract
 import com.example.searchmovieapp.databinding.FragmentFavoritesBinding
@@ -50,7 +49,11 @@ class FavoritesFragment : Fragment(), FavoritesContract.View {
 
     private fun initRecyclerView() {
         binding.favoriteMoviesRecyclerView.adapter =
-            MovieListAdapter(true, this::navigateToMovieDetailFragment)
+            MovieListAdapter(
+                true,
+                this::navigateToMovieDetailFragment,
+                this::changeMovieFavoriteState
+            )
         binding.favoriteMoviesRecyclerView.layoutManager =
             GridLayoutManager(requireContext(), COLUMNS_NUM, GridLayoutManager.VERTICAL, false)
     }
@@ -67,6 +70,11 @@ class FavoritesFragment : Fragment(), FavoritesContract.View {
             favoriteMovies
         )
         hideProgressBar()
+        if (favoriteMovies.isEmpty()) {
+            showNoFavoritesMessage()
+        } else {
+            hideNoFavoritesMessage()
+        }
     }
 
     private fun updateAdapterDataSet(adapter: MovieListAdapter, data: List<MovieEntity>) {
@@ -74,15 +82,28 @@ class FavoritesFragment : Fragment(), FavoritesContract.View {
     }
 
     private fun showProgressBar() {
-        binding.loadingLayout.isVisible = true
+        binding.loadingProcessBar.isVisible = true
     }
 
     private fun hideProgressBar() {
-        binding.loadingLayout.isVisible = false
+        binding.loadingProcessBar.isVisible = false
+    }
+
+    private fun showNoFavoritesMessage() {
+        binding.nothingToShowTextView.isVisible = true
+    }
+
+    private fun hideNoFavoritesMessage() {
+        binding.nothingToShowTextView.isVisible = false
     }
 
     private fun navigateToMovieDetailFragment(movieId: Int) {
         (requireActivity() as HomeFragment.Contract).navigateToMovieDetailFragment(movieId)
+    }
+
+    private fun changeMovieFavoriteState(movieId: Int) {
+        presenter.changeMovieFavoriteState(movieId)
+        presenter.getMovies()
     }
 
     override fun onAttach(context: Context) {

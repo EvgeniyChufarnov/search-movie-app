@@ -54,7 +54,11 @@ class HomeFragment : Fragment(),
     }
 
     private fun initRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.adapter = MovieListAdapter(false, this::navigateToMovieDetailFragment)
+        recyclerView.adapter = MovieListAdapter(
+            false,
+            this::navigateToMovieDetailFragment,
+            this::changeMovieFavoriteState
+        )
         recyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
@@ -87,6 +91,10 @@ class HomeFragment : Fragment(),
 
     private fun navigateToMovieDetailFragment(movieId: Int) {
         (requireActivity() as Contract).navigateToMovieDetailFragment(movieId)
+    }
+
+    private fun changeMovieFavoriteState(movieId: Int) {
+        presenter.changeMovieFavoriteState(movieId)
     }
 
     private fun showNowPlayingProgressBar() {
