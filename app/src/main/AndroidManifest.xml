@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.searchmovieapp">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:name="com.example.searchmovieapp.di.MovieApplication"
         android:allowBackup="true"
