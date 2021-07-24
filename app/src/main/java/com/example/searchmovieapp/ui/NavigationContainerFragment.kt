@@ -12,11 +12,16 @@ import com.example.searchmovieapp.ui.favorites.FavoritesFragment
 import com.example.searchmovieapp.ui.home.HomeFragment
 import com.example.searchmovieapp.ui.ratings.RatingsFragment
 
-private const val CURRENT_FRAGMENT_TAG = "current frugment"
+private const val CURRENT_FRAGMENT_TAG = "current fragment"
+
+private enum class CurrentFragment {
+    HOME, FAVORITES, RATINGS
+}
 
 class NavigationContainerFragment : Fragment() {
     private var _binding: FragmentNavigationContainerBinding? = null
     private val binding get() = _binding!!
+    private var currentFragment: CurrentFragment = CurrentFragment.HOME
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,15 +42,30 @@ class NavigationContainerFragment : Fragment() {
         super.onViewStateRestored(savedInstanceState)
 
         binding.bottomNavigation.run {
-            navigate(menu.findItem(selectedItemId))
+            navigate(menu.findItem(selectedItemId), true)
         }
     }
 
-    private fun navigate(item: MenuItem): Boolean {
+    private fun navigate(item: MenuItem, isFirstStart: Boolean = false): Boolean {
         when (item.itemId) {
-            R.id.item_home -> navigateToFragment(HomeFragment())
-            R.id.item_favorites -> navigateToFragment(FavoritesFragment())
-            R.id.item_ratings -> navigateToFragment(RatingsFragment())
+            R.id.item_home -> {
+                if (isFirstStart || currentFragment != CurrentFragment.HOME) {
+                    currentFragment = CurrentFragment.HOME
+                    navigateToFragment(HomeFragment())
+                }
+            }
+            R.id.item_favorites -> {
+                if (isFirstStart || currentFragment != CurrentFragment.FAVORITES) {
+                    currentFragment = CurrentFragment.FAVORITES
+                    navigateToFragment(FavoritesFragment())
+                }
+            }
+            R.id.item_ratings -> {
+                if (isFirstStart || currentFragment != CurrentFragment.RATINGS) {
+                    currentFragment = CurrentFragment.RATINGS
+                    navigateToFragment(RatingsFragment())
+                }
+            }
         }
 
         return true
