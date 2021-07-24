@@ -3,6 +3,10 @@ package com.example.searchmovieapp.ui
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.searchmovieapp.R
+import com.example.searchmovieapp.ui.details.MovieDetailsFragment
+import com.example.searchmovieapp.ui.favorites.FavoritesFragment
+import com.example.searchmovieapp.ui.home.HomeFragment
+import com.example.searchmovieapp.ui.ratings.RatingsFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,7 +26,7 @@ class MainActivity : AppCompatActivity(), HomeFragment.Contract, FavoritesFragme
     }
 
     override fun navigateToMovieDetailFragment(movieId: Int) {
-        val detailMovieFragment = DetailMovieFragment.getInstance(movieId)
+        val detailMovieFragment = MovieDetailsFragment.getInstance(movieId)
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.full_screen_container, detailMovieFragment)

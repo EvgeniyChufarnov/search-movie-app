@@ -2,6 +2,7 @@ package com.example.searchmovieapp.di
 
 import com.example.searchmovieapp.data.FakeRemoteDataSourceImpl
 import com.example.searchmovieapp.data.RemoteDataSource
+import com.example.searchmovieapp.data.TmdbRemoteDataSourceImpl
 import com.example.searchmovieapp.repositories.MovieRepository
 import dagger.Binds
 import dagger.Module
@@ -17,10 +18,18 @@ abstract class DataSourceModule {
     @Qualifier
     annotation class FakeDataSource
 
+    @Qualifier
+    annotation class TmdbRemoteDataSource
+
     @FakeDataSource
     @Singleton
     @Binds
     abstract fun bindFakeRemoteDataSource(impl: FakeRemoteDataSourceImpl): RemoteDataSource
+
+    @TmdbRemoteDataSource
+    @Singleton
+    @Binds
+    abstract fun bindTmdbRemoteDataSource(impl: TmdbRemoteDataSourceImpl): RemoteDataSource
 }
 
 @InstallIn(SingletonComponent::class)
@@ -29,7 +38,7 @@ class MovieRepositoryModule {
     @Singleton
     @Provides
     fun provideMovieRepository(
-        @DataSourceModule.FakeDataSource remoteDataSource: RemoteDataSource
+        @DataSourceModule.TmdbRemoteDataSource remoteDataSource: RemoteDataSource
     ): MovieRepository {
         return MovieRepository(remoteDataSource)
     }
