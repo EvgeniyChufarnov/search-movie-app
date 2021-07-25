@@ -138,6 +138,19 @@ class FavoritesFragment : Fragment(), FavoritesContract.View {
         binding.nothingToShowTextView.isVisible = false
     }
 
+    override fun showOnLostConnectionMessage() {
+        binding.noConnectionMessageLayout.isVisible = true
+        hideProgressBar()
+    }
+
+    override fun hideOnLostConnectionMessage() {
+        binding.noConnectionMessageLayout.isVisible = false
+
+        if (presenter.isFirstLoading()) {
+            showProgressBar()
+        }
+    }
+
     private fun navigateToMovieDetailFragment(movieId: Int) {
         saveRecyclerViewState()
         (requireActivity() as Contract).navigateToMovieDetailFragment(movieId)

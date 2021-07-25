@@ -9,6 +9,8 @@ interface HomeContract {
         fun showUpcoming(upcomingMovies: List<MovieEntity>)
         fun restoreNowPlayingRecyclerViewPosition(position: Parcelable)
         fun restoreUpcomingRecyclerViewPosition(position: Parcelable)
+        fun showOnLostConnectionMessage()
+        fun hideOnLostConnectionMessage()
     }
 
     interface Presenter {

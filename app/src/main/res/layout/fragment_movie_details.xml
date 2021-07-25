@@ -152,4 +152,23 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
     </FrameLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/no_connection_message_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/no_connection_message_height"
+        android:layout_gravity="bottom"
+        android:layout_margin="@dimen/main_margin"
+        android:backgroundTint="@color/black"
+        android:visibility="gone"
+        app:cardCornerRadius="@dimen/no_connection_message_radius">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/no_internet_connection_available"
+            android:textAlignment="center"
+            android:textColor="@color/white" />
+    </androidx.cardview.widget.CardView>
 </FrameLayout>

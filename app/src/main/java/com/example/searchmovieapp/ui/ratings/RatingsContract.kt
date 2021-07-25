@@ -7,6 +7,8 @@ interface RatingsContract {
     interface View {
         fun showMovies(movies: List<MovieEntity>)
         fun restoreRecyclerViewPosition(position: Parcelable)
+        fun showOnLostConnectionMessage()
+        fun hideOnLostConnectionMessage()
     }
 
     interface Presenter {

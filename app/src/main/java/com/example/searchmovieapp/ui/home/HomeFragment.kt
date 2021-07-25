@@ -48,6 +48,8 @@ class HomeFragment : Fragment(),
             showNowPlayingProgressBar()
             showUpcomingProgressBar()
         }
+
+        presenter.getMovies()
     }
 
     private fun attachView() {
@@ -57,7 +59,6 @@ class HomeFragment : Fragment(),
     private fun initRecyclerViews() {
         initRecyclerView(binding.nowPlayingRecyclerView, this::loadMoreNowPlaying)
         initRecyclerView(binding.upcomingRecyclerView, this::loadMoreUpcoming)
-        presenter.getMovies()
     }
 
     private fun initRecyclerView(recyclerView: RecyclerView, onLoadMore: () -> Unit) {
@@ -183,6 +184,21 @@ class HomeFragment : Fragment(),
 
     private fun hideUpcomingProgressBar() {
         binding.upcomingProgressBar.isVisible = false
+    }
+
+    override fun showOnLostConnectionMessage() {
+        binding.noConnectionMessageLayout.isVisible = true
+        hideNowPlayingProgressBar()
+        hideUpcomingProgressBar()
+    }
+
+    override fun hideOnLostConnectionMessage() {
+        binding.noConnectionMessageLayout.isVisible = false
+
+        if (presenter.isFirstLoading()) {
+            showNowPlayingProgressBar()
+            showUpcomingProgressBar()
+        }
     }
 
     override fun onAttach(context: Context) {

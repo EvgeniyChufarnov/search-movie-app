@@ -5,6 +5,8 @@ import com.example.searchmovieapp.entities.MovieDetailsEntity
 interface MovieDetailsContract {
     interface View {
         fun showDetails(movieDetails: MovieDetailsEntity)
+        fun showOnLostConnectionMessage()
+        fun hideOnLostConnectionMessage()
     }
 
     interface Presenter {

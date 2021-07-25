@@ -12,4 +12,5 @@
     <string name="release_date">Release date: %1$s</string>
     <string name="no_favorites">You have not mark any movie as favorite yet</string>
     <string name="loading_error">Cannot load movies</string>
+    <string name="no_internet_connection_available">No internet connection available</string>
 </resources>
