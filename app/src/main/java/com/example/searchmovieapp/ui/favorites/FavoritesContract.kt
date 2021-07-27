@@ -7,6 +7,8 @@ interface FavoritesContract {
     interface View {
         fun showFavorites(favoriteMovies: List<MovieEntity>)
         fun restoreRecyclerViewPosition(position: Parcelable)
+        fun showOnLostConnectionMessage()
+        fun hideOnLostConnectionMessage()
     }
 
     interface Presenter {

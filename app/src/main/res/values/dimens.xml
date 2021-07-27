@@ -9,4 +9,6 @@
     <dimen name="min_item_width">100dp</dimen>
     <dimen name="min_item_height">150dp</dimen>
     <dimen name="set_favorite_image_size_small">30dp</dimen>
+    <dimen name="no_connection_message_height">30dp</dimen>
+    <dimen name="no_connection_message_radius">10dp</dimen>
 </resources>

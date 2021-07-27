@@ -28,6 +28,7 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
 
     private var movieId by Delegates.notNull<Int>()
     private var isFavorite: Boolean = false
+    private var isLoaded: Boolean = false
 
     companion object Instance {
         fun getInstance(movieId: Int) = MovieDetailsFragment().apply {
@@ -119,6 +120,7 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
 
         hideProgressBar()
         setPoster(movieDetails.posterPath)
+        isLoaded = true
     }
 
     private fun showProgressBar() {
@@ -127,6 +129,26 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
 
     private fun hideProgressBar() {
         binding.loadingProcessBar.isVisible = false
+    }
+
+    override fun showOnLostConnectionMessage() {
+        binding.noConnectionMessageLayout.isVisible = true
+        hideProgressBar()
+
+        if (!isLoaded) {
+            binding.starImageView.isVisible = false
+            binding.setFavoriteImageView.isVisible = false
+        }
+    }
+
+    override fun hideOnLostConnectionMessage() {
+        binding.noConnectionMessageLayout.isVisible = false
+
+        if (!isLoaded) {
+            binding.starImageView.isVisible = true
+            binding.setFavoriteImageView.isVisible = true
+            showProgressBar()
+        }
     }
 
     private fun setPoster(path: String?) {
