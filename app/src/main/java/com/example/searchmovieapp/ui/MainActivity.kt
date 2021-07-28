@@ -1,11 +1,9 @@
 package com.example.searchmovieapp.ui
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.searchmovieapp.ConnectionState
 import com.example.searchmovieapp.R
-import com.example.searchmovieapp.UselessService
 import com.example.searchmovieapp.ui.details.MovieDetailsFragment
 import com.example.searchmovieapp.ui.favorites.FavoritesFragment
 import com.example.searchmovieapp.ui.home.HomeFragment
@@ -22,10 +20,6 @@ class MainActivity : AppCompatActivity(), HomeFragment.Contract, FavoritesFragme
         setContentView(R.layout.activity_main)
         initFullScreenContainer()
         ConnectionState.setContext(this)
-
-        //todo remove useless service
-        val uselessServiceIntent = Intent(this, UselessService::class.java)
-        startService(uselessServiceIntent)
     }
 
     private fun initFullScreenContainer() {
