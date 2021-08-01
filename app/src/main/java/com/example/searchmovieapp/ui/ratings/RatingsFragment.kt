@@ -6,10 +6,12 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.FragmentRatingsBinding
 import com.example.searchmovieapp.entities.MovieEntity
 import com.example.searchmovieapp.ui.common.MovieListAdapter
@@ -45,9 +47,10 @@ class RatingsFragment : Fragment(), RatingsContract.View {
 
         if (presenter.isFirstLoading()) {
             showProgressBar()
+            presenter.getTopRatedMovies()
+        } else {
+            presenter.getAllCachedTopRatedMovies()
         }
-
-        presenter.getTopRatedMovies()
     }
 
     private fun attachView() {
@@ -93,11 +96,12 @@ class RatingsFragment : Fragment(), RatingsContract.View {
     }
 
     override fun showMovies(movies: List<MovieEntity>) {
-        isLoadingMore = false
-        updateAdapterDataSet(
-            binding.moviesRecyclerView.adapter as MovieListAdapter,
-            movies
-        )
+        if (isLoadingMore) {
+            isLoadingMore = false
+            (binding.moviesRecyclerView.adapter as MovieListAdapter).addData(movies)
+        } else {
+            (binding.moviesRecyclerView.adapter as MovieListAdapter).setData(movies)
+        }
 
         if (presenter.isFirstLoading()) {
             hideProgressBar()
@@ -107,10 +111,6 @@ class RatingsFragment : Fragment(), RatingsContract.View {
 
     override fun restoreRecyclerViewPosition(position: Parcelable) {
         binding.moviesRecyclerView.layoutManager?.onRestoreInstanceState(position)
-    }
-
-    private fun updateAdapterDataSet(adapter: MovieListAdapter, data: List<MovieEntity>) {
-        adapter.setData(data)
     }
 
     private fun showProgressBar() {
@@ -132,6 +132,11 @@ class RatingsFragment : Fragment(), RatingsContract.View {
         if (presenter.isFirstLoading()) {
             showProgressBar()
         }
+    }
+
+    override fun showConnectionError(message: String?) {
+        val errorMessage = message ?: getString(R.string.default_network_error)
+        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
     }
 
     private fun navigateToMovieDetailFragment(movieId: Int) {

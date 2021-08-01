@@ -8,7 +8,6 @@ import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.ItemNowPlayingBinding
 import com.example.searchmovieapp.databinding.ItemUpcomingBinding
 import com.example.searchmovieapp.entities.MovieEntity
-import com.example.searchmovieapp.repositories.isFavorite
 
 private const val NOW_PLAYING_MOVIE_TYPE = 0
 private const val UPCOMING_MOVIE_TYPE = 1
@@ -31,6 +30,11 @@ class MovieListAdapter(
         notifyDataSetChanged()
     }
 
+    fun addData(movies: List<MovieEntity>) {
+        dataSet = mutableListOf(*dataSet.toTypedArray()).apply { addAll(movies) }.toList()
+        notifyDataSetChanged()
+    }
+
     override fun getItemViewType(position: Int): Int {
         return if (dataSet[position].isUpcoming) UPCOMING_MOVIE_TYPE else NOW_PLAYING_MOVIE_TYPE
     }
@@ -42,7 +46,12 @@ class MovieListAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: MovieViewHolder, position: Int) {
-        viewHolder.bind(dataSet[position], isLayoutManageVertical, onMovieClicked, onFavoriteClicked)
+        viewHolder.bind(
+            dataSet[position],
+            isLayoutManageVertical,
+            onMovieClicked,
+            onFavoriteClicked
+        )
     }
 
     override fun getItemCount() = dataSet.size
@@ -74,7 +83,7 @@ class MovieListAdapter(
 
             setText(movie)
             setPoster(movie.posterPath)
-            changeFavoriteButtonImage(movie.isFavorite())
+            //changeFavoriteButtonImage(movie.isFavorite())
 
             itemView.setOnClickListener {
                 onMovieClicked.invoke(movie.id)
@@ -82,7 +91,7 @@ class MovieListAdapter(
 
             binding.setFavoriteImageView.setOnClickListener {
                 onFavoriteClicked.invoke(movie.id)
-                changeFavoriteButtonImage(movie.isFavorite())
+                //changeFavoriteButtonImage(movie.isFavorite())
             }
         }
 
@@ -130,7 +139,7 @@ class MovieListAdapter(
 
             setText(movie)
             setPoster(movie.posterPath)
-            changeFavoriteButtonImage(movie.isFavorite())
+            //changeFavoriteButtonImage(movie.isFavorite())
 
             itemView.setOnClickListener {
                 onMovieClicked(movie.id)
@@ -138,7 +147,7 @@ class MovieListAdapter(
 
             binding.setFavoriteImageView.setOnClickListener {
                 onFavoriteClicked(movie.id)
-                changeFavoriteButtonImage(movie.isFavorite())
+                //changeFavoriteButtonImage(movie.isFavorite())
             }
         }
 

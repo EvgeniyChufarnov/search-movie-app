@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.searchmovieapp.ConnectionState
 import com.example.searchmovieapp.R
+import com.example.searchmovieapp.ui.NavigationContainerFragment
 import com.example.searchmovieapp.ui.details.MovieDetailsFragment
 import com.example.searchmovieapp.ui.favorites.FavoritesFragment
 import com.example.searchmovieapp.ui.home.HomeFragment

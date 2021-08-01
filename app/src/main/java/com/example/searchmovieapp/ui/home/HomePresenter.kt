@@ -3,13 +3,15 @@ package com.example.searchmovieapp.ui.home
 import android.os.Parcelable
 import com.example.searchmovieapp.ConnectionState
 import com.example.searchmovieapp.ConnectionStateEvent
-import com.example.searchmovieapp.repositories.MovieRepository
+import com.example.searchmovieapp.data.ResultWrapper
+import com.example.searchmovieapp.repositories.MoviesRepository
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.util.*
 
-class HomePresenter(private val movieRepository: MovieRepository) :
+class HomePresenter(private val moviesRepository: MoviesRepository) :
     HomeContract.Presenter {
 
     private var view: HomeContract.View? = null
@@ -20,7 +22,6 @@ class HomePresenter(private val movieRepository: MovieRepository) :
     private var isFirstLoading = true
     private var isGetNowPlayingCanceled = false
     private var isGetUpcomingCanceled = false
-    private var isCacheLoaded = false
 
     private lateinit var scope: CoroutineScope
 
@@ -39,7 +40,6 @@ class HomePresenter(private val movieRepository: MovieRepository) :
         scope.cancel()
         isGetNowPlayingCanceled = false
         isGetUpcomingCanceled = false
-        isCacheLoaded = false
         EventBus.getDefault().unregister(this)
     }
 
@@ -51,94 +51,77 @@ class HomePresenter(private val movieRepository: MovieRepository) :
     }
 
     private fun getNowPlayingMovies() {
-        if (ConnectionState.isAvailable) {
-            scope.launch {
-                view?.showNowPlaying(requestNowPlayingMovies(requestNowPlayingPageNum))
-
-                savedNowPlayingPosition?.let {
-                    view?.restoreNowPlayingRecyclerViewPosition(it)
-                    savedNowPlayingPosition = null
-                }
+        scope.launch {
+            when (val response = requestNowPlayingMovies(requestNowPlayingPageNum)) {
+                is ResultWrapper.NetworkError -> view?.showConnectionError(null)
+                is ResultWrapper.GenericError -> view?.showConnectionError(response.error?.message)
+                is ResultWrapper.Success -> view?.showNowPlaying(response.value)
             }
-        } else {
+        }
+
+        if (!ConnectionState.isAvailable) {
             view?.showOnLostConnectionMessage()
             isGetNowPlayingCanceled = true
-
-            if (!isCacheLoaded) {
-                isCacheLoaded = true
-                loadCache()
-            }
         }
     }
 
     private fun getUpcomingMovies() {
-        if (ConnectionState.isAvailable) {
-            scope.launch {
-                view?.showUpcoming(requestUpcomingMovies(requestUpcomingPageNum))
-
-                savedUpcomingPosition?.let {
-                    view?.restoreUpcomingRecyclerViewPosition(it)
-                    savedUpcomingPosition = null
-                }
+        scope.launch {
+            when (val response = requestUpcomingMovies(requestUpcomingPageNum)) {
+                is ResultWrapper.NetworkError -> view?.showConnectionError(null)
+                is ResultWrapper.GenericError -> view?.showConnectionError(response.error?.message)
+                is ResultWrapper.Success -> view?.showUpcoming(response.value)
             }
-        } else {
+        }
+
+        if (!ConnectionState.isAvailable) {
             view?.showOnLostConnectionMessage()
             isGetUpcomingCanceled = true
         }
     }
 
-    private suspend fun requestNowPlayingMovies(pageNum: Int) = withContext(Dispatchers.IO) {
-        movieRepository.getNowPlayingMovies(pageNum)
-    }
+    override fun getAllCachedMovies() {
+        scope.launch {
+            view?.showNowPlaying(moviesRepository.getAllLocalCachedNowPlayingMovies(Locale.getDefault().language))
 
-    private suspend fun requestUpcomingMovies(pageNum: Int) = withContext(Dispatchers.IO) {
-        movieRepository.getUpcomingMovies(pageNum)
-    }
-
-    override fun changeMovieFavoriteState(movieId: Int) {
-        movieRepository.changeMovieFavoriteState(movieId)
-    }
-
-    private fun loadCache() {
-        if (!isFirstLoading) {
-            scope.launch {
-                view?.showNowPlaying(
-                    requestNowPlayingMovies(
-                        if (requestNowPlayingPageNum == 1) 1
-                        else requestNowPlayingPageNum - 1
-                    )
-                )
-
-                savedNowPlayingPosition?.let {
-                    view?.restoreNowPlayingRecyclerViewPosition(it)
-                    savedNowPlayingPosition = null
-                }
+            savedNowPlayingPosition?.let {
+                view?.restoreNowPlayingRecyclerViewPosition(it)
+                savedNowPlayingPosition = null
             }
+        }
 
-            scope.launch {
-                view?.showUpcoming(
-                    requestUpcomingMovies(
-                        if (requestUpcomingPageNum == 1) 1
-                        else requestUpcomingPageNum - 1
-                    )
-                )
+        scope.launch {
+            view?.showUpcoming(moviesRepository.getAllLocalCachedUpcomingMovies(Locale.getDefault().language))
 
-                savedUpcomingPosition?.let {
-                    view?.restoreUpcomingRecyclerViewPosition(it)
-                    savedUpcomingPosition = null
-                }
+            savedUpcomingPosition?.let {
+                view?.restoreUpcomingRecyclerViewPosition(it)
+                savedUpcomingPosition = null
             }
         }
     }
 
+    private suspend fun requestNowPlayingMovies(pageNum: Int) =
+        moviesRepository.getNowPlayingMovies(pageNum, Locale.getDefault().language)
+
+    private suspend fun requestUpcomingMovies(pageNum: Int) =
+        moviesRepository.getUpcomingMovies(pageNum, Locale.getDefault().language)
+
+    override fun changeMovieFavoriteState(movieId: Int) {
+        //moviesRepository.changeMovieFavoriteState(movieId)
+    }
+
     override fun loadMoreNowPlaying() {
-        requestNowPlayingPageNum++
-        getNowPlayingMovies()
+        if (requestNowPlayingPageNum + 1 <= moviesRepository.nowPlayingTotalPages) {
+            requestNowPlayingPageNum++
+            getNowPlayingMovies()
+        }
     }
 
     override fun loadMoreUpcoming() {
-        requestUpcomingPageNum++
-        getUpcomingMovies()
+        if (requestUpcomingPageNum + 1 <= moviesRepository.upcomingTotalPages) {
+            requestUpcomingPageNum++
+            getUpcomingMovies()
+        }
     }
 
     override fun saveNowPlayingRecyclerViewPosition(position: Parcelable) {

@@ -6,10 +6,12 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.FragmentHomeBinding
 import com.example.searchmovieapp.entities.MovieEntity
 import com.example.searchmovieapp.ui.common.MovieListAdapter
@@ -47,9 +49,10 @@ class HomeFragment : Fragment(),
         if (presenter.isFirstLoading()) {
             showNowPlayingProgressBar()
             showUpcomingProgressBar()
+            presenter.getMovies()
+        } else {
+            presenter.getAllCachedMovies()
         }
-
-        presenter.getMovies()
     }
 
     private fun attachView() {
@@ -105,12 +108,12 @@ class HomeFragment : Fragment(),
     }
 
     override fun showNowPlaying(nowPlayingMovies: List<MovieEntity>) {
-        isLoadingMoreNowPlaying = false
-
-        updateAdapterDataSet(
-            binding.nowPlayingRecyclerView.adapter as MovieListAdapter,
-            nowPlayingMovies
-        )
+        if (isLoadingMoreNowPlaying) {
+            isLoadingMoreNowPlaying = false
+            (binding.nowPlayingRecyclerView.adapter as MovieListAdapter).addData(nowPlayingMovies)
+        } else {
+            (binding.nowPlayingRecyclerView.adapter as MovieListAdapter).setData(nowPlayingMovies)
+        }
 
         if (presenter.isFirstLoading()) {
             presenter.firstLoadingDone()
@@ -120,12 +123,12 @@ class HomeFragment : Fragment(),
     }
 
     override fun showUpcoming(upcomingMovies: List<MovieEntity>) {
-        isLoadingMoreUpcoming = false
-
-        updateAdapterDataSet(
-            binding.upcomingRecyclerView.adapter as MovieListAdapter,
-            upcomingMovies
-        )
+        if (isLoadingMoreUpcoming) {
+            isLoadingMoreUpcoming = false
+            (binding.upcomingRecyclerView.adapter as MovieListAdapter).addData(upcomingMovies)
+        } else {
+            (binding.upcomingRecyclerView.adapter as MovieListAdapter).setData(upcomingMovies)
+        }
 
         if (presenter.isFirstLoading()) {
             presenter.firstLoadingDone()
@@ -140,10 +143,6 @@ class HomeFragment : Fragment(),
 
     override fun restoreUpcomingRecyclerViewPosition(position: Parcelable) {
         binding.upcomingRecyclerView.layoutManager?.onRestoreInstanceState(position)
-    }
-
-    private fun updateAdapterDataSet(adapter: MovieListAdapter, data: List<MovieEntity>) {
-        adapter.setData(data)
     }
 
     private fun navigateToMovieDetailFragment(movieId: Int) {
@@ -199,6 +198,11 @@ class HomeFragment : Fragment(),
             showNowPlayingProgressBar()
             showUpcomingProgressBar()
         }
+    }
+
+    override fun showConnectionError(message: String?) {
+        val errorMessage = message ?: getString(R.string.default_network_error)
+        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
     }
 
     override fun onAttach(context: Context) {

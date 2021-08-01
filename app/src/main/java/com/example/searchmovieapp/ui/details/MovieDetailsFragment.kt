@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.FragmentMovieDetailsBinding
 import com.example.searchmovieapp.entities.MovieDetailsEntity
-import com.example.searchmovieapp.repositories.isFavorite
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.properties.Delegates
@@ -114,7 +114,7 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
                 binding.durationTextView.text = getString(R.string.duration, runtime)
             }
 
-            isFavorite = movieDetails.isFavorite()
+            //sFavorite = movieDetails.isFavorite()
             changeFavoriteButtonImage()
         }
 
@@ -149,6 +149,11 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
             binding.setFavoriteImageView.isVisible = true
             showProgressBar()
         }
+    }
+
+    override fun showConnectionError(message: String?) {
+        val errorMessage = message ?: getString(R.string.default_network_error)
+        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
     }
 
     private fun setPoster(path: String?) {

@@ -7,6 +7,7 @@ interface MovieDetailsContract {
         fun showDetails(movieDetails: MovieDetailsEntity)
         fun showOnLostConnectionMessage()
         fun hideOnLostConnectionMessage()
+        fun showConnectionError(message: String?)
     }
 
     interface Presenter {
