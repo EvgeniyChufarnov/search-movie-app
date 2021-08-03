@@ -9,6 +9,7 @@ interface RatingsContract {
         fun restoreRecyclerViewPosition(position: Parcelable)
         fun showOnLostConnectionMessage()
         fun hideOnLostConnectionMessage()
+        fun showConnectionError(message: String?)
     }
 
     interface Presenter {
@@ -17,7 +18,8 @@ interface RatingsContract {
         fun isFirstLoading(): Boolean
         fun firstLoadingDone()
         fun getTopRatedMovies()
-        fun changeMovieFavoriteState(movieId: Int)
+        fun getAllCachedTopRatedMovies()
+        fun changeMovieFavoriteState(movie: MovieEntity)
         fun loadMore()
         fun saveRecyclerViewPosition(position: Parcelable)
     }

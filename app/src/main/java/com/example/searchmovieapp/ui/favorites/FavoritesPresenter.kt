@@ -3,21 +3,20 @@ package com.example.searchmovieapp.ui.favorites
 import android.os.Parcelable
 import com.example.searchmovieapp.ConnectionState
 import com.example.searchmovieapp.ConnectionStateEvent
-import com.example.searchmovieapp.repositories.MovieRepository
+import com.example.searchmovieapp.entities.MovieEntity
+import com.example.searchmovieapp.repositories.FavoritesRepository
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
-class FavoritesPresenter(private val movieRepository: MovieRepository) :
+class FavoritesPresenter(private val favoritesRepository: FavoritesRepository) :
     FavoritesContract.Presenter {
 
     private var view: FavoritesContract.View? = null
-    private var requestPageNum = 1
     private var savedPosition: Parcelable? = null
     private var isFirstLoading = true
     private var isLoadingCanceled = false
-    private var isCacheLoaded = false
 
     private lateinit var scope: CoroutineScope
 
@@ -35,7 +34,6 @@ class FavoritesPresenter(private val movieRepository: MovieRepository) :
         view = null
         scope.cancel()
         isLoadingCanceled = false
-        isCacheLoaded = false
         EventBus.getDefault().unregister(this)
     }
 
@@ -44,7 +42,7 @@ class FavoritesPresenter(private val movieRepository: MovieRepository) :
     override fun getMovies() {
         if (ConnectionState.isAvailable) {
             scope.launch {
-                view?.showFavorites(getFavoriteMovies(requestPageNum))
+                view?.showFavorites(getFavoriteMovies())
 
                 savedPosition?.let {
                     view?.restoreRecyclerViewPosition(it)
@@ -54,38 +52,21 @@ class FavoritesPresenter(private val movieRepository: MovieRepository) :
         } else {
             view?.showOnLostConnectionMessage()
             isLoadingCanceled = true
-
-            if (!isCacheLoaded) {
-                isCacheLoaded = true
-                loadCache()
-            }
         }
     }
 
-    private suspend fun getFavoriteMovies(pageNum: Int) = withContext(Dispatchers.IO) {
-        movieRepository.getFavoritesMovies(pageNum)
+    private suspend fun getFavoriteMovies() = withContext(Dispatchers.IO) {
+        favoritesRepository.getFavoritesMovies()
     }
 
-    override fun changeMovieFavoriteState(movieId: Int) {
-        movieRepository.changeMovieFavoriteState(movieId)
-    }
-
-    private fun loadCache() {
-        if (!isFirstLoading) {
-            scope.launch {
-                view?.showFavorites(getFavoriteMovies(if (requestPageNum == 1) 1 else requestPageNum - 1))
-
-                savedPosition?.let {
-                    view?.restoreRecyclerViewPosition(it)
-                    savedPosition = null
-                }
+    override fun changeMovieFavoriteState(movie: MovieEntity) {
+        scope.launch {
+            if (movie.isFavorite) {
+                favoritesRepository.removeFromFavorites(movie)
+            } else {
+                favoritesRepository.addToFavorites(movie)
             }
         }
-    }
-
-    override fun loadMore() {
-        requestPageNum++
-        getMovies()
     }
 
     override fun saveRecyclerViewPosition(position: Parcelable) {

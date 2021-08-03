@@ -8,7 +8,6 @@ import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.ItemNowPlayingBinding
 import com.example.searchmovieapp.databinding.ItemUpcomingBinding
 import com.example.searchmovieapp.entities.MovieEntity
-import com.example.searchmovieapp.repositories.isFavorite
 
 private const val NOW_PLAYING_MOVIE_TYPE = 0
 private const val UPCOMING_MOVIE_TYPE = 1
@@ -20,7 +19,7 @@ private val MovieEntity.releaseYear: String
 class MovieListAdapter(
     private val isLayoutManageVertical: Boolean,
     private val onMovieClicked: (Int) -> Unit,
-    private val onFavoriteClicked: (Int) -> Unit
+    private val onFavoriteClicked: (MovieEntity) -> Unit
 ) :
     RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
 
@@ -28,6 +27,11 @@ class MovieListAdapter(
 
     fun setData(movies: List<MovieEntity>) {
         dataSet = movies
+        notifyDataSetChanged()
+    }
+
+    fun addData(movies: List<MovieEntity>) {
+        dataSet = mutableListOf(*dataSet.toTypedArray()).apply { addAll(movies) }.toList()
         notifyDataSetChanged()
     }
 
@@ -42,7 +46,12 @@ class MovieListAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: MovieViewHolder, position: Int) {
-        viewHolder.bind(dataSet[position], isLayoutManageVertical, onMovieClicked, onFavoriteClicked)
+        viewHolder.bind(
+            dataSet[position],
+            isLayoutManageVertical,
+            onMovieClicked,
+            onFavoriteClicked
+        )
     }
 
     override fun getItemCount() = dataSet.size
@@ -54,7 +63,7 @@ class MovieListAdapter(
             movie: MovieEntity,
             isLayoutManageVertical: Boolean,
             onMovieClicked: (Int) -> Unit,
-            onFavoriteClicked: (Int) -> Unit
+            onFavoriteClicked: (MovieEntity) -> Unit
         )
     }
 
@@ -66,7 +75,7 @@ class MovieListAdapter(
             movie: MovieEntity,
             isLayoutManageVertical: Boolean,
             onMovieClicked: (Int) -> Unit,
-            onFavoriteClicked: (Int) -> Unit
+            onFavoriteClicked: (MovieEntity) -> Unit
         ) {
             if (isLayoutManageVertical) {
                 switchToConstraintsForVerticalLayoutManager()
@@ -74,15 +83,15 @@ class MovieListAdapter(
 
             setText(movie)
             setPoster(movie.posterPath)
-            changeFavoriteButtonImage(movie.isFavorite())
+            changeFavoriteButtonImage(movie.isFavorite)
 
             itemView.setOnClickListener {
                 onMovieClicked.invoke(movie.id)
             }
 
             binding.setFavoriteImageView.setOnClickListener {
-                onFavoriteClicked.invoke(movie.id)
-                changeFavoriteButtonImage(movie.isFavorite())
+                changeFavoriteButtonImage(!movie.isFavorite)
+                onFavoriteClicked.invoke(movie)
             }
         }
 
@@ -122,7 +131,7 @@ class MovieListAdapter(
             movie: MovieEntity,
             isLayoutManageVertical: Boolean,
             onMovieClicked: (Int) -> Unit,
-            onFavoriteClicked: (Int) -> Unit
+            onFavoriteClicked: (MovieEntity) -> Unit
         ) {
             if (isLayoutManageVertical) {
                 switchToConstraintsForVerticalLayoutManager()
@@ -130,15 +139,15 @@ class MovieListAdapter(
 
             setText(movie)
             setPoster(movie.posterPath)
-            changeFavoriteButtonImage(movie.isFavorite())
+            changeFavoriteButtonImage(movie.isFavorite)
 
             itemView.setOnClickListener {
                 onMovieClicked(movie.id)
             }
 
             binding.setFavoriteImageView.setOnClickListener {
-                onFavoriteClicked(movie.id)
-                changeFavoriteButtonImage(movie.isFavorite())
+                changeFavoriteButtonImage(!movie.isFavorite)
+                onFavoriteClicked(movie)
             }
         }
 

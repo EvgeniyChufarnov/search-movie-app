@@ -1,6 +1,8 @@
 package com.example.searchmovieapp.di
 
-import com.example.searchmovieapp.repositories.MovieRepository
+import com.example.searchmovieapp.repositories.FavoritesRepository
+import com.example.searchmovieapp.repositories.MovieDetailsRepository
+import com.example.searchmovieapp.repositories.MoviesRepository
 import com.example.searchmovieapp.ui.details.MovieDetailsContract
 import com.example.searchmovieapp.ui.details.MovieDetailsPresenter
 import com.example.searchmovieapp.ui.favorites.FavoritesContract
@@ -20,24 +22,33 @@ import javax.inject.Singleton
 class PresentersModule {
     @Singleton
     @Provides
-    fun provideHomePresenter(movieRepository: MovieRepository): HomeContract.Presenter {
-        return HomePresenter(movieRepository)
+    fun provideHomePresenter(
+        moviesRepository: MoviesRepository,
+        favoritesRepository: FavoritesRepository
+    ): HomeContract.Presenter {
+        return HomePresenter(moviesRepository, favoritesRepository)
     }
 
     @Singleton
     @Provides
-    fun provideFavoritesPresenter(movieRepository: MovieRepository): FavoritesContract.Presenter {
-        return FavoritesPresenter(movieRepository)
+    fun provideFavoritesPresenter(favoritesRepository: FavoritesRepository): FavoritesContract.Presenter {
+        return FavoritesPresenter(favoritesRepository)
     }
 
     @Singleton
     @Provides
-    fun provideRatingsPresenter(movieRepository: MovieRepository): RatingsContract.Presenter {
-        return RatingsPresenter(movieRepository)
+    fun provideRatingsPresenter(
+        moviesRepository: MoviesRepository,
+        favoritesRepository: FavoritesRepository
+    ): RatingsContract.Presenter {
+        return RatingsPresenter(moviesRepository, favoritesRepository)
     }
 
     @Provides
-    fun provideMovieDetailsPresenter(movieRepository: MovieRepository): MovieDetailsContract.Presenter {
-        return MovieDetailsPresenter(movieRepository)
+    fun provideMovieDetailsPresenter(
+        movieDetailsRepository: MovieDetailsRepository,
+        favoritesRepository: FavoritesRepository
+    ): MovieDetailsContract.Presenter {
+        return MovieDetailsPresenter(movieDetailsRepository, favoritesRepository)
     }
 }

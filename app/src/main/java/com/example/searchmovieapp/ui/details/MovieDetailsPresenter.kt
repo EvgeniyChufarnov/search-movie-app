@@ -2,13 +2,27 @@ package com.example.searchmovieapp.ui.details
 
 import com.example.searchmovieapp.ConnectionState
 import com.example.searchmovieapp.ConnectionStateEvent
-import com.example.searchmovieapp.repositories.MovieRepository
+import com.example.searchmovieapp.data.ResultWrapper
+import com.example.searchmovieapp.entities.MovieDetailsEntity
+import com.example.searchmovieapp.entities.MovieEntity
+import com.example.searchmovieapp.repositories.FavoritesRepository
+import com.example.searchmovieapp.repositories.MovieDetailsRepository
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.util.*
 
-class MovieDetailsPresenter(private val movieRepository: MovieRepository) :
+private fun MovieDetailsEntity.toMovieEntity(): MovieEntity {
+    return MovieEntity(id, title, posterPath, releaseDate, voteAverage).also {
+        it.isFavorite = this.isFavorite
+    }
+}
+
+class MovieDetailsPresenter(
+    private val movieDetailsRepository: MovieDetailsRepository,
+    private val favoritesRepository: FavoritesRepository
+) :
     MovieDetailsContract.Presenter {
 
     private var view: MovieDetailsContract.View? = null
@@ -32,7 +46,11 @@ class MovieDetailsPresenter(private val movieRepository: MovieRepository) :
     override fun getMovieDetails(movieId: Int) {
         if (ConnectionState.isAvailable) {
             scope.launch {
-                view?.showDetails(getMovieDetailsFromRepository(movieId))
+                when (val response = getMovieDetailsFromRepository(movieId)) {
+                    is ResultWrapper.NetworkError -> view?.showConnectionError(null)
+                    is ResultWrapper.GenericError -> view?.showConnectionError(response.error?.message)
+                    is ResultWrapper.Success -> view?.showDetails(response.value.checkFavoriteState())
+                }
             }
         } else {
             view?.showOnLostConnectionMessage()
@@ -41,12 +59,26 @@ class MovieDetailsPresenter(private val movieRepository: MovieRepository) :
         }
     }
 
-    private suspend fun getMovieDetailsFromRepository(movieId: Int) = withContext(Dispatchers.IO) {
-        movieRepository.getMovieDetailsById(movieId)
+    private suspend fun MovieDetailsEntity.checkFavoriteState(): MovieDetailsEntity {
+        isFavorite = favoritesRepository.isMovieFavorite(id)
+        return this
     }
 
-    override fun changeMovieFavoriteState(movieId: Int) {
-        movieRepository.changeMovieFavoriteState(movieId)
+    private suspend fun getMovieDetailsFromRepository(movieId: Int) =
+        movieDetailsRepository.getMovieDetails(movieId, Locale.getDefault().language)
+
+    override fun changeMovieFavoriteState(movieDetails: MovieDetailsEntity) {
+        val movieEntity = movieDetails.toMovieEntity()
+
+        scope.launch {
+            if (movieEntity.isFavorite) {
+                movieDetails.isFavorite = false
+                favoritesRepository.removeFromFavorites(movieEntity)
+            } else {
+                movieDetails.isFavorite = true
+                favoritesRepository.addToFavorites(movieEntity)
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

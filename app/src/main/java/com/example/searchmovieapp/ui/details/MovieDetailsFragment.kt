@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.FragmentMovieDetailsBinding
 import com.example.searchmovieapp.entities.MovieDetailsEntity
-import com.example.searchmovieapp.repositories.isFavorite
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.properties.Delegates
@@ -27,7 +27,7 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
     lateinit var presenter: MovieDetailsContract.Presenter
 
     private var movieId by Delegates.notNull<Int>()
-    private var isFavorite: Boolean = false
+    private var movieDetails: MovieDetailsEntity? = null
     private var isLoaded: Boolean = false
 
     companion object Instance {
@@ -67,13 +67,14 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
 
     private fun setMakeFavoriteListener() {
         binding.setFavoriteImageView.setOnClickListener {
-            isFavorite = !isFavorite
-            presenter.changeMovieFavoriteState(movieId)
-            changeFavoriteButtonImage()
+            movieDetails?.let {
+                changeFavoriteButtonImage(!it.isFavorite)
+                presenter.changeMovieFavoriteState(it)
+            }
         }
     }
 
-    private fun changeFavoriteButtonImage() {
+    private fun changeFavoriteButtonImage(isFavorite: Boolean) {
         binding.setFavoriteImageView.setImageResource(
             if (isFavorite) R.drawable.ic_favorite else R.drawable.ic_favorite_border
         )
@@ -94,6 +95,8 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
     }
 
     override fun showDetails(movieDetails: MovieDetailsEntity) {
+        this.movieDetails = movieDetails
+
         movieDetails.run {
             binding.mainTitleTextView.text = title
             binding.originalTitleTextView.text = originalTitle
@@ -114,8 +117,7 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
                 binding.durationTextView.text = getString(R.string.duration, runtime)
             }
 
-            isFavorite = movieDetails.isFavorite()
-            changeFavoriteButtonImage()
+            changeFavoriteButtonImage(isFavorite)
         }
 
         hideProgressBar()
@@ -149,6 +151,11 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
             binding.setFavoriteImageView.isVisible = true
             showProgressBar()
         }
+    }
+
+    override fun showConnectionError(message: String?) {
+        val errorMessage = message ?: getString(R.string.default_network_error)
+        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
     }
 
     private fun setPoster(path: String?) {

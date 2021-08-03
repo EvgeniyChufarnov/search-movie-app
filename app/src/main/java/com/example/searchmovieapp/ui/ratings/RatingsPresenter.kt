@@ -1,18 +1,25 @@
 package com.example.searchmovieapp.ui.ratings
 
 import android.os.Parcelable
-import com.example.searchmovieapp.ConnectionStateEvent
 import com.example.searchmovieapp.ConnectionState
-import com.example.searchmovieapp.repositories.MovieRepository
+import com.example.searchmovieapp.ConnectionStateEvent
+import com.example.searchmovieapp.data.ResultWrapper
+import com.example.searchmovieapp.entities.MovieEntity
+import com.example.searchmovieapp.repositories.FavoritesRepository
+import com.example.searchmovieapp.repositories.MoviesRepository
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.util.*
 import javax.inject.Singleton
 
 
 @Singleton
-class RatingsPresenter(private val movieRepository: MovieRepository) :
+class RatingsPresenter(
+    private val moviesRepository: MoviesRepository,
+    private val favoritesRepository: FavoritesRepository
+) :
     RatingsContract.Presenter {
 
     private var view: RatingsContract.View? = null
@@ -20,7 +27,6 @@ class RatingsPresenter(private val movieRepository: MovieRepository) :
     private var savedPosition: Parcelable? = null
     private var isFirstLoading = true
     private var isLoadingCanceled = false
-    private var isCacheLoaded = false
 
     private lateinit var scope: CoroutineScope
 
@@ -38,57 +44,63 @@ class RatingsPresenter(private val movieRepository: MovieRepository) :
         view = null
         scope.cancel()
         isLoadingCanceled = false
-        isCacheLoaded = false
         EventBus.getDefault().unregister(this)
     }
 
     override fun isFirstLoading() = isFirstLoading
 
     override fun getTopRatedMovies() {
-        if (ConnectionState.isAvailable) {
-            scope.launch {
-                view?.showMovies(getMovies(requestPageNum))
-
-                savedPosition?.let {
-                    view?.restoreRecyclerViewPosition(it)
-                    savedPosition = null
-                }
+        scope.launch {
+            when (val response = getMovies(requestPageNum)) {
+                is ResultWrapper.NetworkError -> view?.showConnectionError(null)
+                is ResultWrapper.GenericError -> view?.showConnectionError(response.error?.message)
+                is ResultWrapper.Success -> view?.showMovies(response.value.checkFavoritesState())
             }
-        } else {
+        }
+
+        if (!ConnectionState.isAvailable) {
             view?.showOnLostConnectionMessage()
             isLoadingCanceled = true
+        }
+    }
 
-            if (!isCacheLoaded) {
-                isCacheLoaded = true
-                loadCache()
+    private suspend fun List<MovieEntity>.checkFavoritesState(): List<MovieEntity> {
+        forEach {
+            it.isFavorite = favoritesRepository.isMovieFavorite(it.id)
+        }
+        return this
+    }
+
+    override fun getAllCachedTopRatedMovies() {
+        scope.launch {
+            view?.showMovies(moviesRepository.getAllLocalCachedTopRatedMovies(Locale.getDefault().language))
+
+            savedPosition?.let {
+                view?.restoreRecyclerViewPosition(it)
+                savedPosition = null
             }
         }
     }
 
-    private suspend fun getMovies(pageNum: Int) = withContext(Dispatchers.IO) {
-        movieRepository.getTopRatedMovies(pageNum)
+    private suspend fun getMovies(pageNum: Int): ResultWrapper<List<MovieEntity>> {
+        return moviesRepository.getTopRatedMovies(pageNum, Locale.getDefault().language)
     }
 
-    override fun changeMovieFavoriteState(movieId: Int) {
-        movieRepository.changeMovieFavoriteState(movieId)
-    }
-
-    private fun loadCache() {
-        if (!isFirstLoading) {
-            scope.launch {
-                view?.showMovies(getMovies(if (requestPageNum == 1) 1 else requestPageNum - 1))
-
-                savedPosition?.let {
-                    view?.restoreRecyclerViewPosition(it)
-                    savedPosition = null
-                }
+    override fun changeMovieFavoriteState(movie: MovieEntity) {
+        scope.launch {
+            if (movie.isFavorite) {
+                favoritesRepository.removeFromFavorites(movie)
+            } else {
+                favoritesRepository.addToFavorites(movie)
             }
         }
     }
 
     override fun loadMore() {
-        requestPageNum++
-        getTopRatedMovies()
+        if (requestPageNum + 1 <= moviesRepository.topRatedTotalPages) {
+            requestPageNum++
+            getTopRatedMovies()
+        }
     }
 
     override fun saveRecyclerViewPosition(position: Parcelable) {
@@ -97,7 +109,6 @@ class RatingsPresenter(private val movieRepository: MovieRepository) :
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onConnectionStateChangedEvent(event: ConnectionStateEvent) {
-
         if (ConnectionState.isAvailable) {
             view?.hideOnLostConnectionMessage()
 

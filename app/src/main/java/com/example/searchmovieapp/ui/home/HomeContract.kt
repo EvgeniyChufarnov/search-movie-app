@@ -11,6 +11,7 @@ interface HomeContract {
         fun restoreUpcomingRecyclerViewPosition(position: Parcelable)
         fun showOnLostConnectionMessage()
         fun hideOnLostConnectionMessage()
+        fun showConnectionError(message: String?)
     }
 
     interface Presenter {
@@ -19,7 +20,8 @@ interface HomeContract {
         fun isFirstLoading(): Boolean
         fun firstLoadingDone()
         fun getMovies()
-        fun changeMovieFavoriteState(movieId: Int)
+        fun getAllCachedMovies()
+        fun changeMovieFavoriteState(movie: MovieEntity)
         fun loadMoreNowPlaying()
         fun loadMoreUpcoming()
         fun saveNowPlayingRecyclerViewPosition(position: Parcelable)
