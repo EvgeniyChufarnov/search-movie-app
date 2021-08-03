@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.searchmovieapp.databinding.FragmentFavoritesBinding
 import com.example.searchmovieapp.entities.MovieEntity
 import com.example.searchmovieapp.ui.common.MovieListAdapter
@@ -17,13 +16,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 private const val COLUMNS_NUM = 3
-private const val NUM_OF_ITEMS_FROM_LAST_ONE = 5
 
 @AndroidEntryPoint
 class FavoritesFragment : Fragment(), FavoritesContract.View {
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
-    private var isLoadingMore = false
 
     @Inject
     lateinit var presenter: FavoritesContract.Presenter
@@ -66,26 +63,6 @@ class FavoritesFragment : Fragment(), FavoritesContract.View {
             GridLayoutManager(requireContext(), COLUMNS_NUM, GridLayoutManager.VERTICAL, false)
 
         binding.favoriteMoviesRecyclerView.layoutManager = layoutManager
-
-        binding.favoriteMoviesRecyclerView.addOnScrollListener(object :
-            RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-
-                if (layoutManager.findLastVisibleItemPosition() >=
-                    recyclerView.adapter?.itemCount?.minus(NUM_OF_ITEMS_FROM_LAST_ONE)!!
-                ) {
-                    loadMore()
-                }
-            }
-        })
-    }
-
-    private fun loadMore() {
-        if (!isLoadingMore) {
-            isLoadingMore = true
-            presenter.loadMore()
-        }
     }
 
     override fun onDestroyView() {
@@ -95,8 +72,6 @@ class FavoritesFragment : Fragment(), FavoritesContract.View {
     }
 
     override fun showFavorites(favoriteMovies: List<MovieEntity>) {
-        isLoadingMore = false
-
         updateAdapterDataSet(
             binding.favoriteMoviesRecyclerView.adapter as MovieListAdapter,
             favoriteMovies
@@ -164,8 +139,8 @@ class FavoritesFragment : Fragment(), FavoritesContract.View {
         }
     }
 
-    private fun changeMovieFavoriteState(movieId: Int) {
-        presenter.changeMovieFavoriteState(movieId)
+    private fun changeMovieFavoriteState(movie: MovieEntity) {
+        presenter.changeMovieFavoriteState(movie)
         presenter.getMovies()
     }
 

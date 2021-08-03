@@ -25,6 +25,7 @@ class HomeFragment : Fragment(),
     HomeContract.View {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private var isFirstLoaded: Boolean = false
     private var isLoadingMoreNowPlaying = false
     private var isLoadingMoreUpcoming = false
 
@@ -116,7 +117,11 @@ class HomeFragment : Fragment(),
         }
 
         if (presenter.isFirstLoading()) {
-            presenter.firstLoadingDone()
+            if (!isFirstLoaded) {
+                isFirstLoaded = true
+            } else {
+                presenter.firstLoadingDone()
+            }
         }
 
         hideNowPlayingProgressBar()
@@ -131,7 +136,11 @@ class HomeFragment : Fragment(),
         }
 
         if (presenter.isFirstLoading()) {
-            presenter.firstLoadingDone()
+            if (!isFirstLoaded) {
+                isFirstLoaded = true
+            } else {
+                presenter.firstLoadingDone()
+            }
         }
 
         hideUpcomingProgressBar()
@@ -165,8 +174,8 @@ class HomeFragment : Fragment(),
         }
     }
 
-    private fun changeMovieFavoriteState(movieId: Int) {
-        presenter.changeMovieFavoriteState(movieId)
+    private fun changeMovieFavoriteState(movie: MovieEntity) {
+        presenter.changeMovieFavoriteState(movie)
     }
 
     private fun showNowPlayingProgressBar() {

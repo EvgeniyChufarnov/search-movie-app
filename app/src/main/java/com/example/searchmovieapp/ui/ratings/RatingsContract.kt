@@ -19,7 +19,7 @@ interface RatingsContract {
         fun firstLoadingDone()
         fun getTopRatedMovies()
         fun getAllCachedTopRatedMovies()
-        fun changeMovieFavoriteState(movieId: Int)
+        fun changeMovieFavoriteState(movie: MovieEntity)
         fun loadMore()
         fun saveRecyclerViewPosition(position: Parcelable)
     }

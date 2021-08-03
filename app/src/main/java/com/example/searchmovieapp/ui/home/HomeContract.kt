@@ -21,7 +21,7 @@ interface HomeContract {
         fun firstLoadingDone()
         fun getMovies()
         fun getAllCachedMovies()
-        fun changeMovieFavoriteState(movieId: Int)
+        fun changeMovieFavoriteState(movie: MovieEntity)
         fun loadMoreNowPlaying()
         fun loadMoreUpcoming()
         fun saveNowPlayingRecyclerViewPosition(position: Parcelable)

@@ -17,8 +17,7 @@ interface FavoritesContract {
         fun isFirstLoading(): Boolean
         fun firstLoadingDone()
         fun getMovies()
-        fun changeMovieFavoriteState(movieId: Int)
-        fun loadMore()
+        fun changeMovieFavoriteState(movie: MovieEntity)
         fun saveRecyclerViewPosition(position: Parcelable)
     }
 }

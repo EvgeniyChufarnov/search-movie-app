@@ -19,6 +19,7 @@ data class MovieDetailsEntity(
     @Json(name = "overview") val overview: String?,
 ) {
     val genres = genresEntities.map { it.name }
+    var isFavorite = false
 }
 
 @JsonClass(generateAdapter = true)

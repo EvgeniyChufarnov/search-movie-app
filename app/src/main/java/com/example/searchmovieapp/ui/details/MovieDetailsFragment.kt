@@ -27,7 +27,7 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
     lateinit var presenter: MovieDetailsContract.Presenter
 
     private var movieId by Delegates.notNull<Int>()
-    private var isFavorite: Boolean = false
+    private var movieDetails: MovieDetailsEntity? = null
     private var isLoaded: Boolean = false
 
     companion object Instance {
@@ -67,13 +67,14 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
 
     private fun setMakeFavoriteListener() {
         binding.setFavoriteImageView.setOnClickListener {
-            isFavorite = !isFavorite
-            presenter.changeMovieFavoriteState(movieId)
-            changeFavoriteButtonImage()
+            movieDetails?.let {
+                changeFavoriteButtonImage(!it.isFavorite)
+                presenter.changeMovieFavoriteState(it)
+            }
         }
     }
 
-    private fun changeFavoriteButtonImage() {
+    private fun changeFavoriteButtonImage(isFavorite: Boolean) {
         binding.setFavoriteImageView.setImageResource(
             if (isFavorite) R.drawable.ic_favorite else R.drawable.ic_favorite_border
         )
@@ -94,6 +95,8 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
     }
 
     override fun showDetails(movieDetails: MovieDetailsEntity) {
+        this.movieDetails = movieDetails
+
         movieDetails.run {
             binding.mainTitleTextView.text = title
             binding.originalTitleTextView.text = originalTitle
@@ -114,8 +117,7 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
                 binding.durationTextView.text = getString(R.string.duration, runtime)
             }
 
-            //sFavorite = movieDetails.isFavorite()
-            changeFavoriteButtonImage()
+            changeFavoriteButtonImage(isFavorite)
         }
 
         hideProgressBar()

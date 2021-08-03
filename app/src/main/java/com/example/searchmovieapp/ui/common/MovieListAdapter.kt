@@ -19,7 +19,7 @@ private val MovieEntity.releaseYear: String
 class MovieListAdapter(
     private val isLayoutManageVertical: Boolean,
     private val onMovieClicked: (Int) -> Unit,
-    private val onFavoriteClicked: (Int) -> Unit
+    private val onFavoriteClicked: (MovieEntity) -> Unit
 ) :
     RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
 
@@ -63,7 +63,7 @@ class MovieListAdapter(
             movie: MovieEntity,
             isLayoutManageVertical: Boolean,
             onMovieClicked: (Int) -> Unit,
-            onFavoriteClicked: (Int) -> Unit
+            onFavoriteClicked: (MovieEntity) -> Unit
         )
     }
 
@@ -75,7 +75,7 @@ class MovieListAdapter(
             movie: MovieEntity,
             isLayoutManageVertical: Boolean,
             onMovieClicked: (Int) -> Unit,
-            onFavoriteClicked: (Int) -> Unit
+            onFavoriteClicked: (MovieEntity) -> Unit
         ) {
             if (isLayoutManageVertical) {
                 switchToConstraintsForVerticalLayoutManager()
@@ -83,15 +83,15 @@ class MovieListAdapter(
 
             setText(movie)
             setPoster(movie.posterPath)
-            //changeFavoriteButtonImage(movie.isFavorite())
+            changeFavoriteButtonImage(movie.isFavorite)
 
             itemView.setOnClickListener {
                 onMovieClicked.invoke(movie.id)
             }
 
             binding.setFavoriteImageView.setOnClickListener {
-                onFavoriteClicked.invoke(movie.id)
-                //changeFavoriteButtonImage(movie.isFavorite())
+                changeFavoriteButtonImage(!movie.isFavorite)
+                onFavoriteClicked.invoke(movie)
             }
         }
 
@@ -131,7 +131,7 @@ class MovieListAdapter(
             movie: MovieEntity,
             isLayoutManageVertical: Boolean,
             onMovieClicked: (Int) -> Unit,
-            onFavoriteClicked: (Int) -> Unit
+            onFavoriteClicked: (MovieEntity) -> Unit
         ) {
             if (isLayoutManageVertical) {
                 switchToConstraintsForVerticalLayoutManager()
@@ -139,15 +139,15 @@ class MovieListAdapter(
 
             setText(movie)
             setPoster(movie.posterPath)
-            //changeFavoriteButtonImage(movie.isFavorite())
+            changeFavoriteButtonImage(movie.isFavorite)
 
             itemView.setOnClickListener {
                 onMovieClicked(movie.id)
             }
 
             binding.setFavoriteImageView.setOnClickListener {
-                onFavoriteClicked(movie.id)
-                //changeFavoriteButtonImage(movie.isFavorite())
+                changeFavoriteButtonImage(!movie.isFavorite)
+                onFavoriteClicked(movie)
             }
         }
 

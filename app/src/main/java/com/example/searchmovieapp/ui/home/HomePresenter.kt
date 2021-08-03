@@ -4,6 +4,8 @@ import android.os.Parcelable
 import com.example.searchmovieapp.ConnectionState
 import com.example.searchmovieapp.ConnectionStateEvent
 import com.example.searchmovieapp.data.ResultWrapper
+import com.example.searchmovieapp.entities.MovieEntity
+import com.example.searchmovieapp.repositories.FavoritesRepository
 import com.example.searchmovieapp.repositories.MoviesRepository
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
@@ -11,7 +13,10 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 
-class HomePresenter(private val moviesRepository: MoviesRepository) :
+class HomePresenter(
+    private val moviesRepository: MoviesRepository,
+    private val favoritesRepository: FavoritesRepository
+) :
     HomeContract.Presenter {
 
     private var view: HomeContract.View? = null
@@ -55,7 +60,7 @@ class HomePresenter(private val moviesRepository: MoviesRepository) :
             when (val response = requestNowPlayingMovies(requestNowPlayingPageNum)) {
                 is ResultWrapper.NetworkError -> view?.showConnectionError(null)
                 is ResultWrapper.GenericError -> view?.showConnectionError(response.error?.message)
-                is ResultWrapper.Success -> view?.showNowPlaying(response.value)
+                is ResultWrapper.Success -> view?.showNowPlaying(response.value.checkFavoritesState())
             }
         }
 
@@ -70,7 +75,7 @@ class HomePresenter(private val moviesRepository: MoviesRepository) :
             when (val response = requestUpcomingMovies(requestUpcomingPageNum)) {
                 is ResultWrapper.NetworkError -> view?.showConnectionError(null)
                 is ResultWrapper.GenericError -> view?.showConnectionError(response.error?.message)
-                is ResultWrapper.Success -> view?.showUpcoming(response.value)
+                is ResultWrapper.Success -> view?.showUpcoming(response.value.checkFavoritesState())
             }
         }
 
@@ -80,9 +85,19 @@ class HomePresenter(private val moviesRepository: MoviesRepository) :
         }
     }
 
+    private suspend fun List<MovieEntity>.checkFavoritesState(): List<MovieEntity> {
+        forEach {
+            it.isFavorite = favoritesRepository.isMovieFavorite(it.id)
+        }
+        return this
+    }
+
     override fun getAllCachedMovies() {
         scope.launch {
-            view?.showNowPlaying(moviesRepository.getAllLocalCachedNowPlayingMovies(Locale.getDefault().language))
+            view?.showNowPlaying(
+                moviesRepository.getAllLocalCachedNowPlayingMovies(Locale.getDefault().language)
+                    .checkFavoritesState()
+            )
 
             savedNowPlayingPosition?.let {
                 view?.restoreNowPlayingRecyclerViewPosition(it)
@@ -91,7 +106,10 @@ class HomePresenter(private val moviesRepository: MoviesRepository) :
         }
 
         scope.launch {
-            view?.showUpcoming(moviesRepository.getAllLocalCachedUpcomingMovies(Locale.getDefault().language))
+            view?.showUpcoming(
+                moviesRepository.getAllLocalCachedUpcomingMovies(Locale.getDefault().language)
+                    .checkFavoritesState()
+            )
 
             savedUpcomingPosition?.let {
                 view?.restoreUpcomingRecyclerViewPosition(it)
@@ -106,8 +124,16 @@ class HomePresenter(private val moviesRepository: MoviesRepository) :
     private suspend fun requestUpcomingMovies(pageNum: Int) =
         moviesRepository.getUpcomingMovies(pageNum, Locale.getDefault().language)
 
-    override fun changeMovieFavoriteState(movieId: Int) {
-        //moviesRepository.changeMovieFavoriteState(movieId)
+    override fun changeMovieFavoriteState(movie: MovieEntity) {
+        scope.launch {
+            if (movie.isFavorite) {
+                favoritesRepository.removeFromFavorites(movie)
+            } else {
+                favoritesRepository.addToFavorites(movie)
+            }
+
+            getAllCachedMovies()
+        }
     }
 
     override fun loadMoreNowPlaying() {

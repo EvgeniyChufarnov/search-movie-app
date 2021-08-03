@@ -3,18 +3,24 @@ package com.example.searchmovieapp.repositories.impls
 import com.example.searchmovieapp.entities.MovieEntity
 import com.example.searchmovieapp.repositories.FavoritesRepository
 
-class FavoritesRepositoryImpl: FavoritesRepository {
-    private val favoritesCache = mutableListOf<MovieEntity>()
+class FavoritesRepositoryImpl : FavoritesRepository {
+    private val favoritesCache = mutableMapOf<Int, MovieEntity>()
 
     override suspend fun addToFavorites(movie: MovieEntity) {
-        favoritesCache.add(movie)
+        movie.isFavorite = true
+        favoritesCache[movie.id] = movie
     }
 
     override suspend fun removeFromFavorites(movie: MovieEntity) {
-        favoritesCache.remove(movie)
+        movie.isFavorite = false
+        favoritesCache.remove(movie.id)
     }
 
-    override suspend fun getFavorites(): List<MovieEntity> {
-        return favoritesCache
+    override suspend fun getFavoritesMovies(): List<MovieEntity> {
+        return favoritesCache.values.toList()
+    }
+
+    override suspend fun isMovieFavorite(movieId: Int): Boolean {
+        return favoritesCache.containsKey(movieId)
     }
 }

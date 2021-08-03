@@ -22,8 +22,11 @@ import javax.inject.Singleton
 class PresentersModule {
     @Singleton
     @Provides
-    fun provideHomePresenter(moviesRepository: MoviesRepository): HomeContract.Presenter {
-        return HomePresenter(moviesRepository)
+    fun provideHomePresenter(
+        moviesRepository: MoviesRepository,
+        favoritesRepository: FavoritesRepository
+    ): HomeContract.Presenter {
+        return HomePresenter(moviesRepository, favoritesRepository)
     }
 
     @Singleton
@@ -34,12 +37,18 @@ class PresentersModule {
 
     @Singleton
     @Provides
-    fun provideRatingsPresenter(moviesRepository: MoviesRepository): RatingsContract.Presenter {
-        return RatingsPresenter(moviesRepository)
+    fun provideRatingsPresenter(
+        moviesRepository: MoviesRepository,
+        favoritesRepository: FavoritesRepository
+    ): RatingsContract.Presenter {
+        return RatingsPresenter(moviesRepository, favoritesRepository)
     }
 
     @Provides
-    fun provideMovieDetailsPresenter(movieDetailsRepository: MovieDetailsRepository): MovieDetailsContract.Presenter {
-        return MovieDetailsPresenter(movieDetailsRepository)
+    fun provideMovieDetailsPresenter(
+        movieDetailsRepository: MovieDetailsRepository,
+        favoritesRepository: FavoritesRepository
+    ): MovieDetailsContract.Presenter {
+        return MovieDetailsPresenter(movieDetailsRepository, favoritesRepository)
     }
 }

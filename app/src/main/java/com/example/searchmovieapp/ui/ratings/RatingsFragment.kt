@@ -151,8 +151,8 @@ class RatingsFragment : Fragment(), RatingsContract.View {
         }
     }
 
-    private fun changeMovieFavoriteState(movieId: Int) {
-        presenter.changeMovieFavoriteState(movieId)
+    private fun changeMovieFavoriteState(movie: MovieEntity) {
+        presenter.changeMovieFavoriteState(movie)
     }
 
     override fun onAttach(context: Context) {

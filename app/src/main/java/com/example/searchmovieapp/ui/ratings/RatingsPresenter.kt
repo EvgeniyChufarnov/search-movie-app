@@ -5,6 +5,7 @@ import com.example.searchmovieapp.ConnectionState
 import com.example.searchmovieapp.ConnectionStateEvent
 import com.example.searchmovieapp.data.ResultWrapper
 import com.example.searchmovieapp.entities.MovieEntity
+import com.example.searchmovieapp.repositories.FavoritesRepository
 import com.example.searchmovieapp.repositories.MoviesRepository
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
@@ -15,7 +16,10 @@ import javax.inject.Singleton
 
 
 @Singleton
-class RatingsPresenter(private val moviesRepository: MoviesRepository) :
+class RatingsPresenter(
+    private val moviesRepository: MoviesRepository,
+    private val favoritesRepository: FavoritesRepository
+) :
     RatingsContract.Presenter {
 
     private var view: RatingsContract.View? = null
@@ -50,7 +54,7 @@ class RatingsPresenter(private val moviesRepository: MoviesRepository) :
             when (val response = getMovies(requestPageNum)) {
                 is ResultWrapper.NetworkError -> view?.showConnectionError(null)
                 is ResultWrapper.GenericError -> view?.showConnectionError(response.error?.message)
-                is ResultWrapper.Success -> view?.showMovies(response.value)
+                is ResultWrapper.Success -> view?.showMovies(response.value.checkFavoritesState())
             }
         }
 
@@ -58,6 +62,13 @@ class RatingsPresenter(private val moviesRepository: MoviesRepository) :
             view?.showOnLostConnectionMessage()
             isLoadingCanceled = true
         }
+    }
+
+    private suspend fun List<MovieEntity>.checkFavoritesState(): List<MovieEntity> {
+        forEach {
+            it.isFavorite = favoritesRepository.isMovieFavorite(it.id)
+        }
+        return this
     }
 
     override fun getAllCachedTopRatedMovies() {
@@ -75,8 +86,14 @@ class RatingsPresenter(private val moviesRepository: MoviesRepository) :
         return moviesRepository.getTopRatedMovies(pageNum, Locale.getDefault().language)
     }
 
-    override fun changeMovieFavoriteState(movieId: Int) {
-        //moviesRepository.changeMovieFavoriteState(movieId)
+    override fun changeMovieFavoriteState(movie: MovieEntity) {
+        scope.launch {
+            if (movie.isFavorite) {
+                favoritesRepository.removeFromFavorites(movie)
+            } else {
+                favoritesRepository.addToFavorites(movie)
+            }
+        }
     }
 
     override fun loadMore() {

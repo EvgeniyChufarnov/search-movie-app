@@ -12,4 +12,5 @@ data class MovieEntity(
     @Json(name = "vote_average") val voteAverage: Float,
 ) {
     var isUpcoming: Boolean = true
+    var isFavorite: Boolean = false
 }
