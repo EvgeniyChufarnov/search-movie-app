@@ -34,7 +34,7 @@ class MoviesRepositoryImpl @Inject constructor(
 
         val localCache = localMoviesRepository.getNowPlayingMovies(page, language)
 
-        if (localCache is ResultWrapper.Success) {
+        if (localCache is ResultWrapper.Success && localCache.value.isNotEmpty()) {
             return localCache
         } else {
             val result = safeApiCall(dispatcher) {
@@ -64,7 +64,7 @@ class MoviesRepositoryImpl @Inject constructor(
 
         val localCache = localMoviesRepository.getUpcomingMovies(page, language)
 
-        if (localCache is ResultWrapper.Success) {
+        if (localCache is ResultWrapper.Success && localCache.value.isNotEmpty()) {
             return localCache
         } else {
             val result = safeApiCall(dispatcher) {
@@ -94,7 +94,7 @@ class MoviesRepositoryImpl @Inject constructor(
 
         val localCache = localMoviesRepository.getTopRatedMovies(page, language)
 
-        if (localCache is ResultWrapper.Success) {
+        if (localCache is ResultWrapper.Success && localCache.value.isNotEmpty()) {
             return localCache
         } else {
             val result = safeApiCall(dispatcher) {

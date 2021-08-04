@@ -2,6 +2,7 @@ package com.example.searchmovieapp.di
 
 import com.example.searchmovieapp.data.MovieDetailsService
 import com.example.searchmovieapp.data.MoviesService
+import com.example.searchmovieapp.data.local.MoviesDao
 import com.example.searchmovieapp.repositories.FavoritesRepository
 import com.example.searchmovieapp.repositories.LocalMoviesRepository
 import com.example.searchmovieapp.repositories.MovieDetailsRepository
@@ -26,7 +27,8 @@ class MoviesRepositoryModule {
 
     @Provides
     @Singleton
-    fun providesLocalMoviesRepository(): LocalMoviesRepository = LocalMoviesRepositoryImpl()
+    fun providesLocalMoviesRepository(moviesDao: MoviesDao): LocalMoviesRepository =
+        LocalMoviesRepositoryImpl(moviesDao)
 
     @Provides
     @Singleton
