@@ -1,11 +1,11 @@
-package com.example.searchmovieapp.repositories.impls
+package com.example.searchmovieapp.domain.repositories.impls
 
 import com.example.searchmovieapp.data.ResultWrapper
 import com.example.searchmovieapp.data.local.MoviesDao
 import com.example.searchmovieapp.data.local.entities.CachedMovieEntity
 import com.example.searchmovieapp.data.local.entities.MovieEntityType
-import com.example.searchmovieapp.entities.MovieEntity
-import com.example.searchmovieapp.repositories.LocalMoviesRepository
+import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.domain.repositories.LocalMoviesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

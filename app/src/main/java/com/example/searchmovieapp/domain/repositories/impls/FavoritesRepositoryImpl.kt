@@ -1,9 +1,9 @@
-package com.example.searchmovieapp.repositories.impls
+package com.example.searchmovieapp.domain.repositories.impls
 
 import com.example.searchmovieapp.data.local.FavoritesDao
 import com.example.searchmovieapp.data.local.entities.CachedFavoriteMovieEntity
-import com.example.searchmovieapp.entities.MovieEntity
-import com.example.searchmovieapp.repositories.FavoritesRepository
+import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.domain.repositories.FavoritesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

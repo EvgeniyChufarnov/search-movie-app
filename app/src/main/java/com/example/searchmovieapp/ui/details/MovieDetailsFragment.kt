@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.FragmentMovieDetailsBinding
-import com.example.searchmovieapp.entities.MovieDetailsEntity
+import com.example.searchmovieapp.data.remote.entities.MovieDetailsEntity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.properties.Delegates

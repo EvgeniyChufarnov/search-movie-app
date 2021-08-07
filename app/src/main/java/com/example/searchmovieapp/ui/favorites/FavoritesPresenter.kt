@@ -3,8 +3,8 @@ package com.example.searchmovieapp.ui.favorites
 import android.os.Parcelable
 import com.example.searchmovieapp.ConnectionState
 import com.example.searchmovieapp.ConnectionStateEvent
-import com.example.searchmovieapp.entities.MovieEntity
-import com.example.searchmovieapp.repositories.FavoritesRepository
+import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.domain.repositories.FavoritesRepository
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe

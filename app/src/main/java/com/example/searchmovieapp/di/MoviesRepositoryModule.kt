@@ -1,17 +1,17 @@
 package com.example.searchmovieapp.di
 
-import com.example.searchmovieapp.data.MovieDetailsService
-import com.example.searchmovieapp.data.MoviesService
+import com.example.searchmovieapp.data.remote.MovieDetailsService
+import com.example.searchmovieapp.data.remote.MoviesService
 import com.example.searchmovieapp.data.local.FavoritesDao
 import com.example.searchmovieapp.data.local.MoviesDao
-import com.example.searchmovieapp.repositories.FavoritesRepository
-import com.example.searchmovieapp.repositories.LocalMoviesRepository
-import com.example.searchmovieapp.repositories.MovieDetailsRepository
-import com.example.searchmovieapp.repositories.MoviesRepository
-import com.example.searchmovieapp.repositories.impls.FavoritesRepositoryImpl
-import com.example.searchmovieapp.repositories.impls.LocalMoviesRepositoryImpl
-import com.example.searchmovieapp.repositories.impls.MovieDetailsRepositoryImpl
-import com.example.searchmovieapp.repositories.impls.MoviesRepositoryImpl
+import com.example.searchmovieapp.domain.repositories.FavoritesRepository
+import com.example.searchmovieapp.domain.repositories.LocalMoviesRepository
+import com.example.searchmovieapp.domain.repositories.MovieDetailsRepository
+import com.example.searchmovieapp.domain.repositories.MoviesRepository
+import com.example.searchmovieapp.domain.repositories.impls.FavoritesRepositoryImpl
+import com.example.searchmovieapp.domain.repositories.impls.LocalMoviesRepositoryImpl
+import com.example.searchmovieapp.domain.repositories.impls.MovieDetailsRepositoryImpl
+import com.example.searchmovieapp.domain.repositories.impls.MoviesRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

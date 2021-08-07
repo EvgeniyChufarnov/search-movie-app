@@ -1,7 +1,7 @@
 package com.example.searchmovieapp.ui.ratings
 
 import android.os.Parcelable
-import com.example.searchmovieapp.entities.MovieEntity
+import com.example.searchmovieapp.data.remote.entities.MovieEntity
 
 interface RatingsContract {
     interface View {

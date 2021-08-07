@@ -1,4 +1,4 @@
-package com.example.searchmovieapp.entities
+package com.example.searchmovieapp.data.remote.entities
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

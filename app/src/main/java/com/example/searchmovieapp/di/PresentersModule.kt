@@ -1,8 +1,8 @@
 package com.example.searchmovieapp.di
 
-import com.example.searchmovieapp.repositories.FavoritesRepository
-import com.example.searchmovieapp.repositories.MovieDetailsRepository
-import com.example.searchmovieapp.repositories.MoviesRepository
+import com.example.searchmovieapp.domain.repositories.FavoritesRepository
+import com.example.searchmovieapp.domain.repositories.MovieDetailsRepository
+import com.example.searchmovieapp.domain.repositories.MoviesRepository
 import com.example.searchmovieapp.ui.details.MovieDetailsContract
 import com.example.searchmovieapp.ui.details.MovieDetailsPresenter
 import com.example.searchmovieapp.ui.favorites.FavoritesContract

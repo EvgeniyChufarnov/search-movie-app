@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.FragmentRatingsBinding
-import com.example.searchmovieapp.entities.MovieEntity
+import com.example.searchmovieapp.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.ui.common.MovieListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

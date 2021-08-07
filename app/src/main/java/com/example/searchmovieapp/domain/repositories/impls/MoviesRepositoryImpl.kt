@@ -1,11 +1,11 @@
-package com.example.searchmovieapp.repositories.impls
+package com.example.searchmovieapp.domain.repositories.impls
 
-import com.example.searchmovieapp.data.MoviesService
+import com.example.searchmovieapp.data.remote.MoviesService
 import com.example.searchmovieapp.data.ResultWrapper
 import com.example.searchmovieapp.data.safeApiCall
-import com.example.searchmovieapp.entities.MovieEntity
-import com.example.searchmovieapp.repositories.LocalMoviesRepository
-import com.example.searchmovieapp.repositories.MoviesRepository
+import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.domain.repositories.LocalMoviesRepository
+import com.example.searchmovieapp.domain.repositories.MoviesRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject

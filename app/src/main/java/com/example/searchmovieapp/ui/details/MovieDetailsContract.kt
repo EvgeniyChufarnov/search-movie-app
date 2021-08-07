@@ -1,6 +1,6 @@
 package com.example.searchmovieapp.ui.details
 
-import com.example.searchmovieapp.entities.MovieDetailsEntity
+import com.example.searchmovieapp.data.remote.entities.MovieDetailsEntity
 
 interface MovieDetailsContract {
     interface View {

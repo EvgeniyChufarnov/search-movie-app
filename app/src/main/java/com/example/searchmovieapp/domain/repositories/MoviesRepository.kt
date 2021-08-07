@@ -1,7 +1,7 @@
-package com.example.searchmovieapp.repositories
+package com.example.searchmovieapp.domain.repositories
 
 import com.example.searchmovieapp.data.ResultWrapper
-import com.example.searchmovieapp.entities.MovieEntity
+import com.example.searchmovieapp.data.remote.entities.MovieEntity
 
 interface MoviesRepository {
     var nowPlayingTotalPages: Int

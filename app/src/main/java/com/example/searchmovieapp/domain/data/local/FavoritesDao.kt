@@ -5,7 +5,6 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.searchmovieapp.data.local.entities.CachedFavoriteMovieEntity
-import com.example.searchmovieapp.data.local.entities.CachedMovieEntity
 
 @Dao
 interface FavoritesDao {

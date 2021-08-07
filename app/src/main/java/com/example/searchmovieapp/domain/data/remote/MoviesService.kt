@@ -1,7 +1,7 @@
-package com.example.searchmovieapp.data
+package com.example.searchmovieapp.data.remote
 
 import com.example.searchmovieapp.BuildConfig
-import com.example.searchmovieapp.entities.MoviesResultEntity
+import com.example.searchmovieapp.data.remote.entities.MoviesResultEntity
 import retrofit2.http.GET
 import retrofit2.http.Query
 
