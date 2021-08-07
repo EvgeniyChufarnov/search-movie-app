@@ -1,9 +1,11 @@
 package com.example.searchmovieapp.di
 
-import com.example.searchmovieapp.data.remote.MovieDetailsService
-import com.example.searchmovieapp.data.remote.MoviesService
 import com.example.searchmovieapp.data.local.FavoritesDao
 import com.example.searchmovieapp.data.local.MoviesDao
+import com.example.searchmovieapp.data.remote.MovieDetailsService
+import com.example.searchmovieapp.data.remote.MoviesService
+import com.example.searchmovieapp.domain.Interactor
+import com.example.searchmovieapp.domain.InteractorImpl
 import com.example.searchmovieapp.domain.repositories.FavoritesRepository
 import com.example.searchmovieapp.domain.repositories.LocalMoviesRepository
 import com.example.searchmovieapp.domain.repositories.MovieDetailsRepository
@@ -18,6 +20,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.util.*
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -33,10 +36,10 @@ object MoviesRepositoryModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(BASE_URL: String): Retrofit {
+    fun provideRetrofit(baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .addConverterFactory(MoshiConverterFactory.create())
-            .baseUrl(BASE_URL)
+            .baseUrl(baseUrl)
             .build()
     }
 
@@ -54,9 +57,8 @@ object MoviesRepositoryModule {
     @Singleton
     fun provideMoviesRepository(
         moviesService: MoviesService,
-        localMoviesRepository: LocalMoviesRepository
     ): MoviesRepository =
-        MoviesRepositoryImpl(moviesService, localMoviesRepository)
+        MoviesRepositoryImpl(moviesService)
 
     @Provides
     @Singleton
@@ -69,4 +71,20 @@ object MoviesRepositoryModule {
     @Singleton
     fun provideFavoritesRepository(favoritesDao: FavoritesDao): FavoritesRepository =
         FavoritesRepositoryImpl(favoritesDao)
+
+    @Provides
+    @Singleton
+    fun provideInteractor(
+        moviesRepository: MoviesRepository,
+        localMoviesRepository: LocalMoviesRepository,
+        movieDetailsRepository: MovieDetailsRepository,
+        favoritesRepository: FavoritesRepository
+    ): Interactor =
+        InteractorImpl(
+            moviesRepository,
+            localMoviesRepository,
+            movieDetailsRepository,
+            favoritesRepository,
+            Locale.getDefault().language
+        )
 }

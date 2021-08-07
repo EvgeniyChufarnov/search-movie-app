@@ -1,8 +1,6 @@
 package com.example.searchmovieapp.di
 
-import com.example.searchmovieapp.domain.repositories.FavoritesRepository
-import com.example.searchmovieapp.domain.repositories.MovieDetailsRepository
-import com.example.searchmovieapp.domain.repositories.MoviesRepository
+import com.example.searchmovieapp.domain.Interactor
 import com.example.searchmovieapp.ui.details.MovieDetailsContract
 import com.example.searchmovieapp.ui.details.MovieDetailsPresenter
 import com.example.searchmovieapp.ui.favorites.FavoritesContract
@@ -22,33 +20,24 @@ import javax.inject.Singleton
 object PresentersModule {
     @Singleton
     @Provides
-    fun provideHomePresenter(
-        moviesRepository: MoviesRepository,
-        favoritesRepository: FavoritesRepository
-    ): HomeContract.Presenter {
-        return HomePresenter(moviesRepository, favoritesRepository)
+    fun provideHomePresenter(interactor: Interactor): HomeContract.Presenter {
+        return HomePresenter(interactor)
     }
 
     @Singleton
     @Provides
-    fun provideFavoritesPresenter(favoritesRepository: FavoritesRepository): FavoritesContract.Presenter {
-        return FavoritesPresenter(favoritesRepository)
+    fun provideFavoritesPresenter(interactor: Interactor): FavoritesContract.Presenter {
+        return FavoritesPresenter(interactor)
     }
 
     @Singleton
     @Provides
-    fun provideRatingsPresenter(
-        moviesRepository: MoviesRepository,
-        favoritesRepository: FavoritesRepository
-    ): RatingsContract.Presenter {
-        return RatingsPresenter(moviesRepository, favoritesRepository)
+    fun provideRatingsPresenter(interactor: Interactor): RatingsContract.Presenter {
+        return RatingsPresenter(interactor)
     }
 
     @Provides
-    fun provideMovieDetailsPresenter(
-        movieDetailsRepository: MovieDetailsRepository,
-        favoritesRepository: FavoritesRepository
-    ): MovieDetailsContract.Presenter {
-        return MovieDetailsPresenter(movieDetailsRepository, favoritesRepository)
+    fun provideMovieDetailsPresenter(interactor: Interactor): MovieDetailsContract.Presenter {
+        return MovieDetailsPresenter(interactor)
     }
 }

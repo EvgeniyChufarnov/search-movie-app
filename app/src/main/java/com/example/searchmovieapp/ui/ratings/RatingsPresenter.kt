@@ -1,24 +1,21 @@
 package com.example.searchmovieapp.ui.ratings
 
 import android.os.Parcelable
-import com.example.searchmovieapp.ConnectionState
-import com.example.searchmovieapp.ConnectionStateEvent
-import com.example.searchmovieapp.data.ResultWrapper
+import com.example.searchmovieapp.domain.ConnectionState
+import com.example.searchmovieapp.domain.ConnectionStateEvent
 import com.example.searchmovieapp.data.remote.entities.MovieEntity
-import com.example.searchmovieapp.domain.repositories.FavoritesRepository
-import com.example.searchmovieapp.domain.repositories.MoviesRepository
+import com.example.searchmovieapp.domain.Interactor
+import com.example.searchmovieapp.domain.data.ResultWrapper
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.util.*
 import javax.inject.Singleton
 
 
 @Singleton
 class RatingsPresenter(
-    private val moviesRepository: MoviesRepository,
-    private val favoritesRepository: FavoritesRepository
+    private val interactor: Interactor
 ) :
     RatingsContract.Presenter {
 
@@ -56,12 +53,13 @@ class RatingsPresenter(
             when (val response = getMovies(requestPageNum)) {
                 is ResultWrapper.NetworkError -> view?.showConnectionError(null)
                 is ResultWrapper.GenericError -> view?.showConnectionError(response.error?.message)
-                is ResultWrapper.Success -> requestShowingMovies(response.value.checkFavoritesState())
+                is ResultWrapper.Success -> requestShowingMovies(response.value)
             }
         }
 
         if (!ConnectionState.isAvailable) {
             view?.showOnLostConnectionMessage()
+            view?.hideProgressBar()
             isLoadingCanceled = true
         }
     }
@@ -81,17 +79,9 @@ class RatingsPresenter(
         }
     }
 
-    private suspend fun List<MovieEntity>.checkFavoritesState(): List<MovieEntity> {
-        forEach { it.isFavorite = favoritesRepository.isMovieFavorite(it.id) }
-        return this
-    }
-
     private fun getAllCachedTopRatedMovies() {
         scope.launch {
-            view?.showMovies(
-                moviesRepository.getAllLocalCachedTopRatedMovies(Locale.getDefault().language)
-                    .checkFavoritesState()
-            )
+            view?.showMovies(interactor.getAllLocalCachedTopRatedMovies())
 
             savedPosition?.let {
                 view?.restoreRecyclerViewPosition(it)
@@ -101,15 +91,15 @@ class RatingsPresenter(
     }
 
     private suspend fun getMovies(pageNum: Int): ResultWrapper<List<MovieEntity>> {
-        return moviesRepository.getTopRatedMovies(pageNum, Locale.getDefault().language)
+        return interactor.getTopRatedMovies(pageNum)
     }
 
     override fun changeMovieFavoriteState(movie: MovieEntity) {
         scope.launch {
             if (movie.isFavorite) {
-                favoritesRepository.removeFromFavorites(movie)
+                interactor.removeFromFavorites(movie)
             } else {
-                favoritesRepository.addToFavorites(movie)
+                interactor.addToFavorites(movie)
             }
         }
     }
@@ -118,7 +108,7 @@ class RatingsPresenter(
         if (!isLoadingMore) {
             isLoadingMore = true
 
-            if (requestPageNum + 1 <= moviesRepository.topRatedTotalPages) {
+            if (requestPageNum + 1 <= interactor.getTopRatedTotalPages()) {
                 requestPageNum++
                 getTopRatedMovies()
             }

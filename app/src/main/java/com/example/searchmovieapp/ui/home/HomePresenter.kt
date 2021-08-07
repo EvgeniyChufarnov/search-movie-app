@@ -1,21 +1,18 @@
 package com.example.searchmovieapp.ui.home
 
 import android.os.Parcelable
-import com.example.searchmovieapp.ConnectionState
-import com.example.searchmovieapp.ConnectionStateEvent
-import com.example.searchmovieapp.data.ResultWrapper
+import com.example.searchmovieapp.domain.ConnectionState
+import com.example.searchmovieapp.domain.ConnectionStateEvent
 import com.example.searchmovieapp.data.remote.entities.MovieEntity
-import com.example.searchmovieapp.domain.repositories.FavoritesRepository
-import com.example.searchmovieapp.domain.repositories.MoviesRepository
+import com.example.searchmovieapp.domain.Interactor
+import com.example.searchmovieapp.domain.data.ResultWrapper
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.util.*
 
 class HomePresenter(
-    private val moviesRepository: MoviesRepository,
-    private val favoritesRepository: FavoritesRepository
+    private val interactor: Interactor
 ) :
     HomeContract.Presenter {
 
@@ -64,13 +61,15 @@ class HomePresenter(
 
             when {
                 nowPlayingResult is ResultWrapper.Success && upcomingPlayingResult is ResultWrapper.Success -> {
-                    view?.showMovies(
-                        nowPlayingResult.value.checkFavoritesState(),
-                        upcomingPlayingResult.value.checkFavoritesState()
-                    )
+                    view?.showMovies(nowPlayingResult.value, upcomingPlayingResult.value)
 
                     if (isFirstLoading) {
                         isFirstLoading = false
+
+                        if (ConnectionState.isAvailable) {
+                            interactor.forcedUpdate()
+                            getMovies()
+                        }
                     }
 
                     view?.hideProgressBar()
@@ -88,6 +87,7 @@ class HomePresenter(
 
             if (!ConnectionState.isAvailable) {
                 view?.showOnLostConnectionMessage()
+                view?.hideProgressBar()
                 isLoadingCanceled = true
             }
         }
@@ -98,11 +98,12 @@ class HomePresenter(
             when (val response = requestNowPlayingMovies(requestNowPlayingPageNum)) {
                 is ResultWrapper.NetworkError -> view?.showConnectionError(null)
                 is ResultWrapper.GenericError -> view?.showConnectionError(response.error?.message)
-                is ResultWrapper.Success -> view?.showMoreNowPlaying(response.value.checkFavoritesState())
+                is ResultWrapper.Success -> view?.showMoreNowPlaying(response.value)
             }
 
             if (!ConnectionState.isAvailable) {
                 view?.showOnLostConnectionMessage()
+                view?.hideProgressBar()
                 isNowPlayingCanceled = true
             }
         }
@@ -113,30 +114,22 @@ class HomePresenter(
             when (val response = requestUpcomingMovies(requestUpcomingPageNum)) {
                 is ResultWrapper.NetworkError -> view?.showConnectionError(null)
                 is ResultWrapper.GenericError -> view?.showConnectionError(response.error?.message)
-                is ResultWrapper.Success -> view?.showMoreUpcoming(response.value.checkFavoritesState())
+                is ResultWrapper.Success -> view?.showMoreUpcoming(response.value)
             }
 
             if (!ConnectionState.isAvailable) {
                 view?.showOnLostConnectionMessage()
+                view?.hideProgressBar()
                 isUpcomingCanceled = true
             }
         }
     }
 
-    private suspend fun List<MovieEntity>.checkFavoritesState(): List<MovieEntity> {
-        forEach {
-            it.isFavorite = favoritesRepository.isMovieFavorite(it.id)
-        }
-        return this
-    }
-
     private fun getAllCachedMovies() {
         scope.launch {
             view?.showMovies(
-                moviesRepository.getAllLocalCachedNowPlayingMovies(Locale.getDefault().language)
-                    .checkFavoritesState(),
-                moviesRepository.getAllLocalCachedUpcomingMovies(Locale.getDefault().language)
-                    .checkFavoritesState()
+                interactor.getAllLocalCachedNowPlayingMovies(),
+                interactor.getAllLocalCachedUpcomingMovies()
             )
 
             savedNowPlayingPosition?.let {
@@ -152,17 +145,17 @@ class HomePresenter(
     }
 
     private suspend fun requestNowPlayingMovies(pageNum: Int) =
-        moviesRepository.getNowPlayingMovies(pageNum, Locale.getDefault().language)
+        interactor.getNowPlayingMovies(pageNum)
 
     private suspend fun requestUpcomingMovies(pageNum: Int) =
-        moviesRepository.getUpcomingMovies(pageNum, Locale.getDefault().language)
+        interactor.getUpcomingMovies(pageNum)
 
     override fun changeMovieFavoriteState(movie: MovieEntity) {
         scope.launch {
             if (movie.isFavorite) {
-                favoritesRepository.removeFromFavorites(movie)
+                interactor.removeFromFavorites(movie)
             } else {
-                favoritesRepository.addToFavorites(movie)
+                interactor.addToFavorites(movie)
             }
 
             getAllCachedMovies()
@@ -172,7 +165,7 @@ class HomePresenter(
     override fun loadMoreNowPlaying() {
         if (!isLoadingMoreNowPlaying) {
             isLoadingMoreNowPlaying = true
-            if (requestNowPlayingPageNum + 1 <= moviesRepository.nowPlayingTotalPages) {
+            if (requestNowPlayingPageNum + 1 <= interactor.getNowPlayingTotalPages()) {
                 requestNowPlayingPageNum++
                 getNowPlayingMovies()
             }
@@ -182,7 +175,7 @@ class HomePresenter(
     override fun loadMoreUpcoming() {
         if (!isLoadingMoreUpcoming) {
             isLoadingMoreUpcoming = true
-            if (requestUpcomingPageNum + 1 <= moviesRepository.upcomingTotalPages) {
+            if (requestUpcomingPageNum + 1 <= interactor.getUpcomingTotalPages()) {
                 requestUpcomingPageNum++
                 getUpcomingMovies()
             }

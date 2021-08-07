@@ -1,4 +1,4 @@
-package com.example.searchmovieapp.data
+package com.example.searchmovieapp.domain.data
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

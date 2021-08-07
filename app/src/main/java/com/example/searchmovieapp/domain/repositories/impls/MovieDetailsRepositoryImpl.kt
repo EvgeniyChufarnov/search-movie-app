@@ -1,7 +1,7 @@
 package com.example.searchmovieapp.domain.repositories.impls
 
 import com.example.searchmovieapp.data.remote.MovieDetailsService
-import com.example.searchmovieapp.data.safeApiCall
+import com.example.searchmovieapp.domain.data.safeApiCall
 import com.example.searchmovieapp.data.remote.entities.MovieDetailsEntity
 import com.example.searchmovieapp.domain.repositories.MovieDetailsRepository
 import kotlinx.coroutines.CoroutineDispatcher

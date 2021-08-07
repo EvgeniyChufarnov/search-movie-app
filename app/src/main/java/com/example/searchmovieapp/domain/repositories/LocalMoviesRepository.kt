@@ -1,6 +1,6 @@
 package com.example.searchmovieapp.domain.repositories
 
-import com.example.searchmovieapp.data.ResultWrapper
+import com.example.searchmovieapp.domain.data.ResultWrapper
 import com.example.searchmovieapp.data.remote.entities.MovieEntity
 
 interface LocalMoviesRepository {
@@ -13,4 +13,5 @@ interface LocalMoviesRepository {
     suspend fun cacheNowPlayingMovies(page: Int, language: String, movies: List<MovieEntity>)
     suspend fun cacheUpcomingMovies(page: Int, language: String, movies: List<MovieEntity>)
     suspend fun cacheTopRatedMovies(page: Int, language: String, movies: List<MovieEntity>)
+    suspend fun clear()
 }

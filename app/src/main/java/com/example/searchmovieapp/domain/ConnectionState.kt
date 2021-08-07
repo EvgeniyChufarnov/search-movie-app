@@ -1,4 +1,4 @@
-package com.example.searchmovieapp
+package com.example.searchmovieapp.domain
 
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE

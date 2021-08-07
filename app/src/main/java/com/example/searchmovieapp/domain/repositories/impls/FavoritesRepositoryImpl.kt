@@ -4,6 +4,7 @@ import com.example.searchmovieapp.data.local.FavoritesDao
 import com.example.searchmovieapp.data.local.entities.CachedFavoriteMovieEntity
 import com.example.searchmovieapp.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.domain.repositories.FavoritesRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -16,47 +17,21 @@ private fun MovieEntity.toCachedFavoriteMovieEntity() =
 private fun CachedFavoriteMovieEntity.toMovieEntity() =
     MovieEntity(id, title, posterPath, releaseDate, voteAverage).apply { isFavorite = true }
 
-class FavoritesRepositoryImpl @Inject constructor(private val favoritesDao: FavoritesDao) :
+class FavoritesRepositoryImpl @Inject constructor(
+    private val favoritesDao: FavoritesDao,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) :
     FavoritesRepository {
-    private var favoritesCache: MutableMap<Int, MovieEntity>? = null
-    private var isCacheLoaded = false
-    private var mutex = Mutex()
 
-    override suspend fun addToFavorites(movie: MovieEntity) = withContext(Dispatchers.IO) {
-        movie.isFavorite = true
-        favoritesCache?.set(movie.id, movie)
+    override suspend fun addToFavorites(movie: MovieEntity) = withContext(dispatcher) {
         favoritesDao.addToFavorites(movie.toCachedFavoriteMovieEntity())
     }
 
-    override suspend fun removeFromFavorites(movie: MovieEntity) = withContext(Dispatchers.IO) {
-        movie.isFavorite = false
-        favoritesCache?.remove(movie.id)
+    override suspend fun removeFromFavorites(movie: MovieEntity) = withContext(dispatcher) {
         favoritesDao.removeFromFavorites(movie.toCachedFavoriteMovieEntity())
     }
 
-    override suspend fun getFavoritesMovies(): List<MovieEntity> = withContext(Dispatchers.IO) {
+    override suspend fun getFavoritesMovies(): List<MovieEntity> = withContext(dispatcher) {
         favoritesDao.getFavoritesMovies().map { it.toMovieEntity() }
-    }
-
-    override suspend fun isMovieFavorite(movieId: Int) = withContext(Dispatchers.IO) {
-        if (!isCacheLoaded) {
-            waitForInit()
-        }
-
-        favoritesCache?.containsKey(movieId) ?: false
-    }
-
-    private suspend fun waitForInit() {
-        mutex.withLock {
-            if (favoritesCache == null) {
-                favoritesCache = mutableMapOf()
-
-                getFavoritesMovies().forEach {
-                    favoritesCache?.set(it.id, it)
-                }
-
-                isCacheLoaded = true
-            }
-        }
     }
 }

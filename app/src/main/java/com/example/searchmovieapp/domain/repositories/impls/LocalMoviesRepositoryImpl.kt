@@ -1,11 +1,12 @@
 package com.example.searchmovieapp.domain.repositories.impls
 
-import com.example.searchmovieapp.data.ResultWrapper
 import com.example.searchmovieapp.data.local.MoviesDao
 import com.example.searchmovieapp.data.local.entities.CachedMovieEntity
 import com.example.searchmovieapp.data.local.entities.MovieEntityType
 import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.domain.data.ResultWrapper
 import com.example.searchmovieapp.domain.repositories.LocalMoviesRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -27,9 +28,14 @@ private fun MovieEntity.toCachedMovieEntity(
 )
 
 private fun CachedMovieEntity.toMovieEntity(isUpcoming: Boolean) =
-    MovieEntity(id, title, posterPath, releaseDate, voteAverage).apply { this.isUpcoming = isUpcoming }
+    MovieEntity(id, title, posterPath, releaseDate, voteAverage).apply {
+        this.isUpcoming = isUpcoming
+    }
 
-class LocalMoviesRepositoryImpl @Inject constructor(private val moviesDao: MoviesDao) :
+class LocalMoviesRepositoryImpl @Inject constructor(
+    private val moviesDao: MoviesDao,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) :
     LocalMoviesRepository {
 
     override suspend fun cacheNowPlayingMovies(
@@ -37,7 +43,7 @@ class LocalMoviesRepositoryImpl @Inject constructor(private val moviesDao: Movie
         language: String,
         movies: List<MovieEntity>
     ) {
-        withContext(Dispatchers.IO) {
+        withContext(dispatcher) {
             moviesDao.addMovies(*movies.map {
                 it.toCachedMovieEntity(
                     page,
@@ -53,7 +59,7 @@ class LocalMoviesRepositoryImpl @Inject constructor(private val moviesDao: Movie
         language: String,
         movies: List<MovieEntity>
     ) {
-        withContext(Dispatchers.IO) {
+        withContext(dispatcher) {
             moviesDao.addMovies(*movies.map {
                 it.toCachedMovieEntity(
                     page,
@@ -69,7 +75,7 @@ class LocalMoviesRepositoryImpl @Inject constructor(private val moviesDao: Movie
         language: String,
         movies: List<MovieEntity>
     ) {
-        withContext(Dispatchers.IO) {
+        withContext(dispatcher) {
             moviesDao.addMovies(*movies.map {
                 it.toCachedMovieEntity(
                     page,
@@ -84,7 +90,7 @@ class LocalMoviesRepositoryImpl @Inject constructor(private val moviesDao: Movie
         page: Int,
         language: String
     ): ResultWrapper<List<MovieEntity>> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher) {
             wrapResult(
                 moviesDao.getMoviesByPage(page, language, MovieEntityType.NOW_PLAYING.ordinal)
                     .map { it.toMovieEntity(false) })
@@ -95,7 +101,7 @@ class LocalMoviesRepositoryImpl @Inject constructor(private val moviesDao: Movie
         page: Int,
         language: String
     ): ResultWrapper<List<MovieEntity>> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher) {
             wrapResult(
                 moviesDao.getMoviesByPage(page, language, MovieEntityType.UPCOMING.ordinal)
                     .map { it.toMovieEntity(true) })
@@ -106,7 +112,7 @@ class LocalMoviesRepositoryImpl @Inject constructor(private val moviesDao: Movie
         page: Int,
         language: String
     ): ResultWrapper<List<MovieEntity>> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher) {
             wrapResult(
                 moviesDao.getMoviesByPage(page, language, MovieEntityType.TOP_RATED.ordinal)
                     .map { it.toMovieEntity(false) })
@@ -114,23 +120,29 @@ class LocalMoviesRepositoryImpl @Inject constructor(private val moviesDao: Movie
     }
 
     override suspend fun getAllLocalCachedNowPlayingMovies(language: String): List<MovieEntity> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher) {
             moviesDao.getMovies(language, MovieEntityType.NOW_PLAYING.ordinal)
                 .map { it.toMovieEntity(false) }
         }
     }
 
     override suspend fun getAllLocalCachedUpcomingMovies(language: String): List<MovieEntity> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher) {
             moviesDao.getMovies(language, MovieEntityType.UPCOMING.ordinal)
                 .map { it.toMovieEntity(true) }
         }
     }
 
     override suspend fun getAllLocalCachedTopRatedMovies(language: String): List<MovieEntity> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher) {
             moviesDao.getMovies(language, MovieEntityType.TOP_RATED.ordinal)
                 .map { it.toMovieEntity(false) }
+        }
+    }
+
+    override suspend fun clear() {
+        withContext(dispatcher) {
+            moviesDao.clear()
         }
     }
 
