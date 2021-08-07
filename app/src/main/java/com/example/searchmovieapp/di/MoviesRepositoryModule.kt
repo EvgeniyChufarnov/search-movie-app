@@ -2,6 +2,7 @@ package com.example.searchmovieapp.di
 
 import com.example.searchmovieapp.data.MovieDetailsService
 import com.example.searchmovieapp.data.MoviesService
+import com.example.searchmovieapp.data.local.FavoritesDao
 import com.example.searchmovieapp.data.local.MoviesDao
 import com.example.searchmovieapp.repositories.FavoritesRepository
 import com.example.searchmovieapp.repositories.LocalMoviesRepository
@@ -21,7 +22,7 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class MoviesRepositoryModule {
+object MoviesRepositoryModule {
     @Provides
     fun providesBaseUrl(): String = "https://api.themoviedb.org/3/"
 
@@ -66,5 +67,6 @@ class MoviesRepositoryModule {
 
     @Provides
     @Singleton
-    fun provideFavoritesRepository(): FavoritesRepository = FavoritesRepositoryImpl()
+    fun provideFavoritesRepository(favoritesDao: FavoritesDao): FavoritesRepository =
+        FavoritesRepositoryImpl(favoritesDao)
 }

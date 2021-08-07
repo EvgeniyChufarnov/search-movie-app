@@ -141,7 +141,6 @@ class FavoritesFragment : Fragment(), FavoritesContract.View {
 
     private fun changeMovieFavoriteState(movie: MovieEntity) {
         presenter.changeMovieFavoriteState(movie)
-        presenter.getMovies()
     }
 
     override fun onAttach(context: Context) {

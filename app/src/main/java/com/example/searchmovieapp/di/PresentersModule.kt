@@ -19,7 +19,7 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class PresentersModule {
+object PresentersModule {
     @Singleton
     @Provides
     fun provideHomePresenter(

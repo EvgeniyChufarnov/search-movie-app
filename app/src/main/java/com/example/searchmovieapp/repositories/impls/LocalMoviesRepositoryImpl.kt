@@ -26,8 +26,8 @@ private fun MovieEntity.toCachedMovieEntity(
     type.ordinal
 )
 
-private fun CachedMovieEntity.toMovieEntity() =
-    MovieEntity(id, title, posterPath, releaseDate, voteAverage)
+private fun CachedMovieEntity.toMovieEntity(isUpcoming: Boolean) =
+    MovieEntity(id, title, posterPath, releaseDate, voteAverage).apply { this.isUpcoming = isUpcoming }
 
 class LocalMoviesRepositoryImpl @Inject constructor(private val moviesDao: MoviesDao) :
     LocalMoviesRepository {
@@ -87,7 +87,7 @@ class LocalMoviesRepositoryImpl @Inject constructor(private val moviesDao: Movie
         return withContext(Dispatchers.IO) {
             wrapResult(
                 moviesDao.getMoviesByPage(page, language, MovieEntityType.NOW_PLAYING.ordinal)
-                    .map { it.toMovieEntity() })
+                    .map { it.toMovieEntity(false) })
         }
     }
 
@@ -98,7 +98,7 @@ class LocalMoviesRepositoryImpl @Inject constructor(private val moviesDao: Movie
         return withContext(Dispatchers.IO) {
             wrapResult(
                 moviesDao.getMoviesByPage(page, language, MovieEntityType.UPCOMING.ordinal)
-                    .map { it.toMovieEntity() })
+                    .map { it.toMovieEntity(true) })
         }
     }
 
@@ -109,28 +109,28 @@ class LocalMoviesRepositoryImpl @Inject constructor(private val moviesDao: Movie
         return withContext(Dispatchers.IO) {
             wrapResult(
                 moviesDao.getMoviesByPage(page, language, MovieEntityType.TOP_RATED.ordinal)
-                    .map { it.toMovieEntity() })
+                    .map { it.toMovieEntity(false) })
         }
     }
 
     override suspend fun getAllLocalCachedNowPlayingMovies(language: String): List<MovieEntity> {
         return withContext(Dispatchers.IO) {
             moviesDao.getMovies(language, MovieEntityType.NOW_PLAYING.ordinal)
-                .map { it.toMovieEntity() }
+                .map { it.toMovieEntity(false) }
         }
     }
 
     override suspend fun getAllLocalCachedUpcomingMovies(language: String): List<MovieEntity> {
         return withContext(Dispatchers.IO) {
             moviesDao.getMovies(language, MovieEntityType.UPCOMING.ordinal)
-                .map { it.toMovieEntity() }
+                .map { it.toMovieEntity(true) }
         }
     }
 
     override suspend fun getAllLocalCachedTopRatedMovies(language: String): List<MovieEntity> {
         return withContext(Dispatchers.IO) {
             moviesDao.getMovies(language, MovieEntityType.TOP_RATED.ordinal)
-                .map { it.toMovieEntity() }
+                .map { it.toMovieEntity(false) }
         }
     }
 

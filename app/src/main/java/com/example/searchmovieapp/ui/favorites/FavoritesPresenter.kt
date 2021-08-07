@@ -42,7 +42,7 @@ class FavoritesPresenter(private val favoritesRepository: FavoritesRepository) :
     override fun getMovies() {
         if (ConnectionState.isAvailable) {
             scope.launch {
-                view?.showFavorites(getFavoriteMovies())
+                view?.showFavorites(favoritesRepository.getFavoritesMovies())
 
                 savedPosition?.let {
                     view?.restoreRecyclerViewPosition(it)
@@ -55,10 +55,6 @@ class FavoritesPresenter(private val favoritesRepository: FavoritesRepository) :
         }
     }
 
-    private suspend fun getFavoriteMovies() = withContext(Dispatchers.IO) {
-        favoritesRepository.getFavoritesMovies()
-    }
-
     override fun changeMovieFavoriteState(movie: MovieEntity) {
         scope.launch {
             if (movie.isFavorite) {
@@ -66,6 +62,8 @@ class FavoritesPresenter(private val favoritesRepository: FavoritesRepository) :
             } else {
                 favoritesRepository.addToFavorites(movie)
             }
+
+            getMovies()
         }
     }
 
