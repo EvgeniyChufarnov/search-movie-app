@@ -25,8 +25,11 @@ class HomePresenter(
     private var savedNowPlayingPosition: Parcelable? = null
     private var savedUpcomingPosition: Parcelable? = null
     private var isFirstLoading = true
-    private var isGetNowPlayingCanceled = false
-    private var isGetUpcomingCanceled = false
+    private var isLoadingCanceled = false
+    private var isNowPlayingCanceled = false
+    private var isUpcomingCanceled = false
+    private var isLoadingMoreNowPlaying = false
+    private var isLoadingMoreUpcoming = false
 
     private lateinit var scope: CoroutineScope
 
@@ -34,25 +37,60 @@ class HomePresenter(
         this.view = view
         scope = CoroutineScope(Job() + Dispatchers.Main)
         EventBus.getDefault().register(this)
-    }
 
-    override fun firstLoadingDone() {
-        isFirstLoading = false
+        if (isFirstLoading) {
+            view.showProgressBar()
+            getMovies()
+        } else {
+            getAllCachedMovies()
+        }
     }
 
     override fun detach() {
         view = null
         scope.cancel()
-        isGetNowPlayingCanceled = false
-        isGetUpcomingCanceled = false
+        isLoadingCanceled = false
+        isNowPlayingCanceled = false
+        isUpcomingCanceled = false
+        isLoadingMoreNowPlaying = false
+        isLoadingMoreUpcoming = false
         EventBus.getDefault().unregister(this)
     }
 
-    override fun isFirstLoading() = isFirstLoading
+    private fun getMovies() {
+        scope.launch {
+            val nowPlayingResult = requestNowPlayingMovies(requestNowPlayingPageNum)
+            val upcomingPlayingResult = requestUpcomingMovies(requestUpcomingPageNum)
 
-    override fun getMovies() {
-        getNowPlayingMovies()
-        getUpcomingMovies()
+            when {
+                nowPlayingResult is ResultWrapper.Success && upcomingPlayingResult is ResultWrapper.Success -> {
+                    view?.showMovies(
+                        nowPlayingResult.value.checkFavoritesState(),
+                        upcomingPlayingResult.value.checkFavoritesState()
+                    )
+
+                    if (isFirstLoading) {
+                        isFirstLoading = false
+                    }
+
+                    view?.hideProgressBar()
+                }
+                nowPlayingResult is ResultWrapper.GenericError -> {
+                    view?.showConnectionError(nowPlayingResult.error?.message)
+                }
+                upcomingPlayingResult is ResultWrapper.GenericError -> {
+                    view?.showConnectionError(upcomingPlayingResult.error?.message)
+                }
+                else -> {
+                    view?.showConnectionError(null)
+                }
+            }
+
+            if (!ConnectionState.isAvailable) {
+                view?.showOnLostConnectionMessage()
+                isLoadingCanceled = true
+            }
+        }
     }
 
     private fun getNowPlayingMovies() {
@@ -60,13 +98,13 @@ class HomePresenter(
             when (val response = requestNowPlayingMovies(requestNowPlayingPageNum)) {
                 is ResultWrapper.NetworkError -> view?.showConnectionError(null)
                 is ResultWrapper.GenericError -> view?.showConnectionError(response.error?.message)
-                is ResultWrapper.Success -> view?.showNowPlaying(response.value.checkFavoritesState())
+                is ResultWrapper.Success -> view?.showMoreNowPlaying(response.value.checkFavoritesState())
             }
-        }
 
-        if (!ConnectionState.isAvailable) {
-            view?.showOnLostConnectionMessage()
-            isGetNowPlayingCanceled = true
+            if (!ConnectionState.isAvailable) {
+                view?.showOnLostConnectionMessage()
+                isNowPlayingCanceled = true
+            }
         }
     }
 
@@ -75,13 +113,13 @@ class HomePresenter(
             when (val response = requestUpcomingMovies(requestUpcomingPageNum)) {
                 is ResultWrapper.NetworkError -> view?.showConnectionError(null)
                 is ResultWrapper.GenericError -> view?.showConnectionError(response.error?.message)
-                is ResultWrapper.Success -> view?.showUpcoming(response.value.checkFavoritesState())
+                is ResultWrapper.Success -> view?.showMoreUpcoming(response.value.checkFavoritesState())
             }
-        }
 
-        if (!ConnectionState.isAvailable) {
-            view?.showOnLostConnectionMessage()
-            isGetUpcomingCanceled = true
+            if (!ConnectionState.isAvailable) {
+                view?.showOnLostConnectionMessage()
+                isUpcomingCanceled = true
+            }
         }
     }
 
@@ -92,10 +130,12 @@ class HomePresenter(
         return this
     }
 
-    override fun getAllCachedMovies() {
+    private fun getAllCachedMovies() {
         scope.launch {
-            view?.showNowPlaying(
+            view?.showMovies(
                 moviesRepository.getAllLocalCachedNowPlayingMovies(Locale.getDefault().language)
+                    .checkFavoritesState(),
+                moviesRepository.getAllLocalCachedUpcomingMovies(Locale.getDefault().language)
                     .checkFavoritesState()
             )
 
@@ -103,13 +143,6 @@ class HomePresenter(
                 view?.restoreNowPlayingRecyclerViewPosition(it)
                 savedNowPlayingPosition = null
             }
-        }
-
-        scope.launch {
-            view?.showUpcoming(
-                moviesRepository.getAllLocalCachedUpcomingMovies(Locale.getDefault().language)
-                    .checkFavoritesState()
-            )
 
             savedUpcomingPosition?.let {
                 view?.restoreUpcomingRecyclerViewPosition(it)
@@ -137,25 +170,29 @@ class HomePresenter(
     }
 
     override fun loadMoreNowPlaying() {
-        if (requestNowPlayingPageNum + 1 <= moviesRepository.nowPlayingTotalPages) {
-            requestNowPlayingPageNum++
-            getNowPlayingMovies()
+        if (!isLoadingMoreNowPlaying) {
+            isLoadingMoreNowPlaying = true
+            if (requestNowPlayingPageNum + 1 <= moviesRepository.nowPlayingTotalPages) {
+                requestNowPlayingPageNum++
+                getNowPlayingMovies()
+            }
         }
     }
 
     override fun loadMoreUpcoming() {
-        if (requestUpcomingPageNum + 1 <= moviesRepository.upcomingTotalPages) {
-            requestUpcomingPageNum++
-            getUpcomingMovies()
+        if (!isLoadingMoreUpcoming) {
+            isLoadingMoreUpcoming = true
+            if (requestUpcomingPageNum + 1 <= moviesRepository.upcomingTotalPages) {
+                requestUpcomingPageNum++
+                getUpcomingMovies()
+            }
         }
     }
 
-    override fun saveNowPlayingRecyclerViewPosition(position: Parcelable) {
-        savedNowPlayingPosition = position
-    }
-
-    override fun saveUpcomingRecyclerRecyclerViewPosition(position: Parcelable) {
-        savedUpcomingPosition = position
+    override fun navigateToMovieDetailFragment(movieId: Int) {
+        savedNowPlayingPosition = view?.getNowPlayingRecyclerViewState()
+        savedUpcomingPosition = view?.getNowPlayingRecyclerViewState()
+        view?.navigateToMovieDetailFragment(movieId)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -166,17 +203,27 @@ class HomePresenter(
 
             scope = CoroutineScope(Job() + Dispatchers.Main)
 
-            if (isGetNowPlayingCanceled) {
-                isGetNowPlayingCanceled = false
+            if (isFirstLoading) {
+                view?.showProgressBar()
+            }
+
+            if (isLoadingCanceled) {
+                isLoadingCanceled = false
+                getMovies()
+            }
+
+            if (isNowPlayingCanceled) {
+                isNowPlayingCanceled = false
                 getNowPlayingMovies()
             }
 
-            if (isGetUpcomingCanceled) {
-                isGetUpcomingCanceled = false
+            if (isUpcomingCanceled) {
+                isUpcomingCanceled = false
                 getUpcomingMovies()
             }
         } else {
             view?.showOnLostConnectionMessage()
+            view?.hideProgressBar()
             scope.cancel()
         }
     }
