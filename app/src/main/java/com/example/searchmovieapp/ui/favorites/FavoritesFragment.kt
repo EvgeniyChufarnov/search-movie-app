@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.searchmovieapp.databinding.FragmentFavoritesBinding
 import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.databinding.FragmentFavoritesBinding
 import com.example.searchmovieapp.ui.common.MovieListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -37,17 +37,7 @@ class FavoritesFragment : Fragment(), FavoritesContract.View {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        attachView()
         initRecyclerView()
-
-        if (presenter.isFirstLoading()) {
-            showProgressBar()
-        }
-
-        presenter.getMovies()
-    }
-
-    private fun attachView() {
         presenter.attach(this)
     }
 
@@ -55,8 +45,8 @@ class FavoritesFragment : Fragment(), FavoritesContract.View {
         binding.favoriteMoviesRecyclerView.adapter =
             MovieListAdapter(
                 true,
-                this::navigateToMovieDetailFragment,
-                this::changeMovieFavoriteState
+                presenter::navigateToMovieDetailFragment,
+                presenter::changeMovieFavoriteState
             )
 
         val layoutManager =
@@ -72,76 +62,43 @@ class FavoritesFragment : Fragment(), FavoritesContract.View {
     }
 
     override fun showFavorites(favoriteMovies: List<MovieEntity>) {
-        updateAdapterDataSet(
-            binding.favoriteMoviesRecyclerView.adapter as MovieListAdapter,
-            favoriteMovies
-        )
-
-        if (presenter.isFirstLoading()) {
-            hideProgressBar()
-            presenter.firstLoadingDone()
-        }
-
-        if (favoriteMovies.isEmpty()) {
-            showNoFavoritesMessage()
-        } else {
-            hideNoFavoritesMessage()
-        }
+        (binding.favoriteMoviesRecyclerView.adapter as MovieListAdapter).setData(favoriteMovies)
     }
 
     override fun restoreRecyclerViewPosition(position: Parcelable) {
         binding.favoriteMoviesRecyclerView.layoutManager?.onRestoreInstanceState(position)
     }
 
-    private fun updateAdapterDataSet(adapter: MovieListAdapter, data: List<MovieEntity>) {
-        adapter.setData(data)
-    }
-
-    private fun showProgressBar() {
+    override fun showProgressBar() {
         binding.loadingProcessBar.isVisible = true
     }
 
-    private fun hideProgressBar() {
+    override fun hideProgressBar() {
         binding.loadingProcessBar.isVisible = false
     }
 
-    private fun showNoFavoritesMessage() {
+    override fun showNoFavoritesMessage() {
         binding.nothingToShowTextView.isVisible = true
     }
 
-    private fun hideNoFavoritesMessage() {
+    override fun hideNoFavoritesMessage() {
         binding.nothingToShowTextView.isVisible = false
     }
 
     override fun showOnLostConnectionMessage() {
         binding.noConnectionMessageLayout.isVisible = true
-        hideProgressBar()
     }
 
     override fun hideOnLostConnectionMessage() {
         binding.noConnectionMessageLayout.isVisible = false
-
-        if (presenter.isFirstLoading()) {
-            showProgressBar()
-        }
     }
 
-    private fun navigateToMovieDetailFragment(movieId: Int) {
-        saveRecyclerViewState()
+    override fun navigateToMovieDetailFragment(movieId: Int) {
         (requireActivity() as Contract).navigateToMovieDetailFragment(movieId)
     }
 
-    private fun saveRecyclerViewState() {
-        val recyclerViewState =
-            binding.favoriteMoviesRecyclerView.layoutManager?.onSaveInstanceState()
-        recyclerViewState?.let {
-            presenter.saveRecyclerViewPosition(it)
-        }
-    }
-
-    private fun changeMovieFavoriteState(movie: MovieEntity) {
-        presenter.changeMovieFavoriteState(movie)
-    }
+    override fun getRecyclerViewState(): Parcelable? =
+        binding.favoriteMoviesRecyclerView.layoutManager?.onSaveInstanceState()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

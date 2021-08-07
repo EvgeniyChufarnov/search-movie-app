@@ -29,10 +29,14 @@ class MovieDetailsPresenter(
     private var scope = CoroutineScope(Job() + Dispatchers.Main)
     private var isLoadingCanceled = false
     private var movieId = 0
+    private var isLoaded: Boolean = false
 
-    override fun attach(view: MovieDetailsContract.View) {
+    override fun attach(view: MovieDetailsContract.View, movieId: Int) {
         this.view = view
         EventBus.getDefault().register(this)
+        this.movieId = movieId
+        view.showProgressBar()
+        getMovieDetails()
     }
 
     override fun detach() {
@@ -40,22 +44,26 @@ class MovieDetailsPresenter(
         scope.cancel()
         isLoadingCanceled = false
         movieId = 0
+        isLoaded = false
         EventBus.getDefault().unregister(this)
     }
 
-    override fun getMovieDetails(movieId: Int) {
+    private fun getMovieDetails() {
         if (ConnectionState.isAvailable) {
             scope.launch {
                 when (val response = getMovieDetailsFromRepository(movieId)) {
                     is ResultWrapper.NetworkError -> view?.showConnectionError(null)
                     is ResultWrapper.GenericError -> view?.showConnectionError(response.error?.message)
-                    is ResultWrapper.Success -> view?.showDetails(response.value.checkFavoriteState())
+                    is ResultWrapper.Success -> {
+                        view?.showDetails(response.value.checkFavoriteState())
+                        view?.hideProgressBar()
+                        isLoaded = true
+                    }
                 }
             }
         } else {
             view?.showOnLostConnectionMessage()
             isLoadingCanceled = true
-            this.movieId = movieId
         }
     }
 
@@ -87,14 +95,19 @@ class MovieDetailsPresenter(
         if (ConnectionState.isAvailable) {
             view?.hideOnLostConnectionMessage()
 
+            if (!isLoaded) {
+                view?.showProgressBar()
+            }
+
             scope = CoroutineScope(Job() + Dispatchers.Main)
 
             if (isLoadingCanceled) {
                 isLoadingCanceled = false
-                getMovieDetails(movieId)
+                getMovieDetails()
             }
         } else {
             view?.showOnLostConnectionMessage()
+            view?.hideProgressBar()
             scope.cancel()
         }
     }

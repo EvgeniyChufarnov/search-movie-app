@@ -16,7 +16,6 @@ class FavoritesPresenter(private val favoritesRepository: FavoritesRepository) :
     private var view: FavoritesContract.View? = null
     private var savedPosition: Parcelable? = null
     private var isFirstLoading = true
-    private var isLoadingCanceled = false
 
     private lateinit var scope: CoroutineScope
 
@@ -24,34 +23,47 @@ class FavoritesPresenter(private val favoritesRepository: FavoritesRepository) :
         this.view = view
         scope = CoroutineScope(Job() + Dispatchers.Main)
         EventBus.getDefault().register(this)
-    }
 
-    override fun firstLoadingDone() {
-        isFirstLoading = false
+        if (isFirstLoading) {
+            view.showProgressBar()
+        }
+
+        getMovies()
     }
 
     override fun detach() {
         view = null
         scope.cancel()
-        isLoadingCanceled = false
+        isFirstLoading = false
         EventBus.getDefault().unregister(this)
     }
 
-    override fun isFirstLoading() = isFirstLoading
+    private fun getMovies() {
+        scope.launch {
+            requestShowingMovies(favoritesRepository.getFavoritesMovies())
+        }
 
-    override fun getMovies() {
-        if (ConnectionState.isAvailable) {
-            scope.launch {
-                view?.showFavorites(favoritesRepository.getFavoritesMovies())
-
-                savedPosition?.let {
-                    view?.restoreRecyclerViewPosition(it)
-                    savedPosition = null
-                }
-            }
-        } else {
+        if (!ConnectionState.isAvailable) {
             view?.showOnLostConnectionMessage()
-            isLoadingCanceled = true
+        }
+    }
+
+    private fun requestShowingMovies(movies: List<MovieEntity>) {
+        if (isFirstLoading) {
+            view?.hideProgressBar()
+            isFirstLoading = false
+        }
+
+        if (movies.isEmpty()) {
+            view?.showNoFavoritesMessage()
+        } else {
+            view?.hideNoFavoritesMessage()
+            view?.showFavorites(movies)
+
+            savedPosition?.let {
+                view?.restoreRecyclerViewPosition(it)
+                savedPosition = null
+            }
         }
     }
 
@@ -67,25 +79,22 @@ class FavoritesPresenter(private val favoritesRepository: FavoritesRepository) :
         }
     }
 
-    override fun saveRecyclerViewPosition(position: Parcelable) {
-        savedPosition = position
+    override fun navigateToMovieDetailFragment(movieId: Int) {
+        savedPosition = view?.getRecyclerViewState()
+        view?.navigateToMovieDetailFragment(movieId)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onConnectionStateChangedEvent(event: ConnectionStateEvent) {
-
         if (ConnectionState.isAvailable) {
             view?.hideOnLostConnectionMessage()
 
-            scope = CoroutineScope(Job() + Dispatchers.Main)
-
-            if (isLoadingCanceled) {
-                isLoadingCanceled = false
-                getMovies()
+            if (isFirstLoading) {
+                view?.showProgressBar()
             }
         } else {
             view?.showOnLostConnectionMessage()
-            scope.cancel()
+            view?.hideProgressBar()
         }
     }
 }

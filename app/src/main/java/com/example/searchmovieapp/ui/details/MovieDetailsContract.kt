@@ -8,12 +8,13 @@ interface MovieDetailsContract {
         fun showOnLostConnectionMessage()
         fun hideOnLostConnectionMessage()
         fun showConnectionError(message: String?)
+        fun showProgressBar()
+        fun hideProgressBar()
     }
 
     interface Presenter {
-        fun attach(view: View)
+        fun attach(view: View, movieId: Int)
         fun detach()
-        fun getMovieDetails(movieId: Int)
         fun changeMovieFavoriteState(movieDetails: MovieDetailsEntity)
     }
 }

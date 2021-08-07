@@ -26,6 +26,7 @@ class RatingsPresenter(
     private var requestPageNum = 1
     private var savedPosition: Parcelable? = null
     private var isFirstLoading = true
+    private var isLoadingMore = false
     private var isLoadingCanceled = false
 
     private lateinit var scope: CoroutineScope
@@ -34,10 +35,13 @@ class RatingsPresenter(
         this.view = view
         scope = CoroutineScope(Job() + Dispatchers.Main)
         EventBus.getDefault().register(this)
-    }
 
-    override fun firstLoadingDone() {
-        isFirstLoading = false
+        if (isFirstLoading) {
+            view.showProgressBar()
+            getTopRatedMovies()
+        } else {
+            getAllCachedTopRatedMovies()
+        }
     }
 
     override fun detach() {
@@ -47,14 +51,12 @@ class RatingsPresenter(
         EventBus.getDefault().unregister(this)
     }
 
-    override fun isFirstLoading() = isFirstLoading
-
-    override fun getTopRatedMovies() {
+    private fun getTopRatedMovies() {
         scope.launch {
             when (val response = getMovies(requestPageNum)) {
                 is ResultWrapper.NetworkError -> view?.showConnectionError(null)
                 is ResultWrapper.GenericError -> view?.showConnectionError(response.error?.message)
-                is ResultWrapper.Success -> view?.showMovies(response.value.checkFavoritesState())
+                is ResultWrapper.Success -> requestShowingMovies(response.value.checkFavoritesState())
             }
         }
 
@@ -64,16 +66,32 @@ class RatingsPresenter(
         }
     }
 
-    private suspend fun List<MovieEntity>.checkFavoritesState(): List<MovieEntity> {
-        forEach {
-            it.isFavorite = favoritesRepository.isMovieFavorite(it.id)
+    private fun requestShowingMovies(movies: List<MovieEntity>) {
+        if (isFirstLoading) {
+            view?.hideProgressBar()
+            isFirstLoading = false
         }
+
+        if (isLoadingMore) {
+            isLoadingMore = false
+
+            view?.showMoreMovies(movies)
+        } else {
+            view?.showMovies(movies)
+        }
+    }
+
+    private suspend fun List<MovieEntity>.checkFavoritesState(): List<MovieEntity> {
+        forEach { it.isFavorite = favoritesRepository.isMovieFavorite(it.id) }
         return this
     }
 
-    override fun getAllCachedTopRatedMovies() {
+    private fun getAllCachedTopRatedMovies() {
         scope.launch {
-            view?.showMovies(moviesRepository.getAllLocalCachedTopRatedMovies(Locale.getDefault().language))
+            view?.showMovies(
+                moviesRepository.getAllLocalCachedTopRatedMovies(Locale.getDefault().language)
+                    .checkFavoritesState()
+            )
 
             savedPosition?.let {
                 view?.restoreRecyclerViewPosition(it)
@@ -97,20 +115,29 @@ class RatingsPresenter(
     }
 
     override fun loadMore() {
-        if (requestPageNum + 1 <= moviesRepository.topRatedTotalPages) {
-            requestPageNum++
-            getTopRatedMovies()
+        if (!isLoadingMore) {
+            isLoadingMore = true
+
+            if (requestPageNum + 1 <= moviesRepository.topRatedTotalPages) {
+                requestPageNum++
+                getTopRatedMovies()
+            }
         }
     }
 
-    override fun saveRecyclerViewPosition(position: Parcelable) {
-        savedPosition = position
+    override fun navigateToMovieDetailFragment(movieId: Int) {
+        savedPosition = view?.getRecyclerViewState()
+        view?.navigateToMovieDetailFragment(movieId)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onConnectionStateChangedEvent(event: ConnectionStateEvent) {
         if (ConnectionState.isAvailable) {
             view?.hideOnLostConnectionMessage()
+
+            if (isFirstLoading) {
+                view?.showProgressBar()
+            }
 
             scope = CoroutineScope(Job() + Dispatchers.Main)
 
@@ -120,6 +147,7 @@ class RatingsPresenter(
             }
         } else {
             view?.showOnLostConnectionMessage()
+            view?.hideProgressBar()
             scope.cancel()
         }
     }
