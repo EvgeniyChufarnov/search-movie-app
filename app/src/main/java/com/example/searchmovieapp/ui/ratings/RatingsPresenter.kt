@@ -39,6 +39,8 @@ class RatingsPresenter(
         } else {
             getAllCachedTopRatedMovies()
         }
+
+        checkConnectionState()
     }
 
     override fun detach() {
@@ -56,7 +58,9 @@ class RatingsPresenter(
                 is ResultWrapper.Success -> requestShowingMovies(response.value)
             }
         }
+    }
 
+    private fun checkConnectionState() {
         if (!ConnectionState.isAvailable) {
             view?.showOnLostConnectionMessage()
             view?.hideProgressBar()

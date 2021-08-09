@@ -41,6 +41,8 @@ class HomePresenter(
         } else {
             getAllCachedMovies()
         }
+
+        checkConnectionState()
     }
 
     override fun detach() {
@@ -84,12 +86,14 @@ class HomePresenter(
                     view?.showConnectionError(null)
                 }
             }
+        }
+    }
 
-            if (!ConnectionState.isAvailable) {
-                view?.showOnLostConnectionMessage()
-                view?.hideProgressBar()
-                isLoadingCanceled = true
-            }
+    private fun checkConnectionState() {
+        if (!ConnectionState.isAvailable) {
+            view?.showOnLostConnectionMessage()
+            view?.hideProgressBar()
+            isLoadingCanceled = true
         }
     }
 

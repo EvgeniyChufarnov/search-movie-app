@@ -27,10 +27,9 @@ class InteractorImpl @Inject constructor(
 
     override suspend fun forcedUpdate() {
         if (isForcedUpdateNeeded) {
-            val nowPlayingMovies = localMoviesRepository.getNowPlayingMovies(FIRST_PAGE, language)
-            val upcomingMovies = localMoviesRepository.getUpcomingMovies(FIRST_PAGE, language)
-            val topRatedMovies = localMoviesRepository.getTopRatedMovies(FIRST_PAGE, language)
-
+            val nowPlayingMovies = moviesRepository.getNowPlayingMovies(FIRST_PAGE, language)
+            val upcomingMovies = moviesRepository.getUpcomingMovies(FIRST_PAGE, language)
+            val topRatedMovies = moviesRepository.getTopRatedMovies(FIRST_PAGE, language)
 
             if (nowPlayingMovies is ResultWrapper.Success && upcomingMovies is ResultWrapper.Success
                 && topRatedMovies is ResultWrapper.Success) {
