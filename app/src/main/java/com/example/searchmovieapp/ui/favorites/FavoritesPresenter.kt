@@ -1,16 +1,16 @@
 package com.example.searchmovieapp.ui.favorites
 
 import android.os.Parcelable
+import com.example.searchmovieapp.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.domain.ConnectionState
 import com.example.searchmovieapp.domain.ConnectionStateEvent
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
-import com.example.searchmovieapp.domain.Interactor
+import com.example.searchmovieapp.domain.interactors.FavoritesInteractor
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
-class FavoritesPresenter(private val interactor: Interactor) :
+class FavoritesPresenter(private val favoritesInteractor: FavoritesInteractor) :
     FavoritesContract.Presenter {
 
     private var view: FavoritesContract.View? = null
@@ -40,7 +40,7 @@ class FavoritesPresenter(private val interactor: Interactor) :
 
     private fun getMovies() {
         scope.launch {
-            requestShowingMovies(interactor.getFavoritesMovies())
+            requestShowingMovies(favoritesInteractor.getFavoritesMovies())
         }
 
         if (!ConnectionState.isAvailable) {
@@ -70,9 +70,9 @@ class FavoritesPresenter(private val interactor: Interactor) :
     override fun changeMovieFavoriteState(movie: MovieEntity) {
         scope.launch {
             if (movie.isFavorite) {
-                interactor.removeFromFavorites(movie)
+                favoritesInteractor.removeFromFavorites(movie)
             } else {
-                interactor.addToFavorites(movie)
+                favoritesInteractor.addToFavorites(movie)
             }
 
             getMovies()

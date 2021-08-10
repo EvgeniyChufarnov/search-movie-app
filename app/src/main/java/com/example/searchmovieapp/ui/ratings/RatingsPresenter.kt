@@ -1,21 +1,20 @@
 package com.example.searchmovieapp.ui.ratings
 
 import android.os.Parcelable
+import com.example.searchmovieapp.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.domain.ConnectionState
 import com.example.searchmovieapp.domain.ConnectionStateEvent
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
-import com.example.searchmovieapp.domain.Interactor
 import com.example.searchmovieapp.domain.data.ResultWrapper
+import com.example.searchmovieapp.domain.interactors.FavoritesInteractor
+import com.example.searchmovieapp.domain.interactors.MoviesInteractor
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import javax.inject.Singleton
 
-
-@Singleton
 class RatingsPresenter(
-    private val interactor: Interactor
+    private val moviesInteractor: MoviesInteractor,
+    private val favoritesInteractor: FavoritesInteractor
 ) :
     RatingsContract.Presenter {
 
@@ -85,7 +84,7 @@ class RatingsPresenter(
 
     private fun getAllCachedTopRatedMovies() {
         scope.launch {
-            view?.showMovies(interactor.getAllLocalCachedTopRatedMovies())
+            view?.showMovies(moviesInteractor.getAllLocalCachedTopRatedMovies())
 
             savedPosition?.let {
                 view?.restoreRecyclerViewPosition(it)
@@ -95,15 +94,15 @@ class RatingsPresenter(
     }
 
     private suspend fun getMovies(pageNum: Int): ResultWrapper<List<MovieEntity>> {
-        return interactor.getTopRatedMovies(pageNum)
+        return moviesInteractor.getTopRatedMovies(pageNum)
     }
 
     override fun changeMovieFavoriteState(movie: MovieEntity) {
         scope.launch {
             if (movie.isFavorite) {
-                interactor.removeFromFavorites(movie)
+                favoritesInteractor.removeFromFavorites(movie)
             } else {
-                interactor.addToFavorites(movie)
+                favoritesInteractor.addToFavorites(movie)
             }
         }
     }
@@ -112,7 +111,7 @@ class RatingsPresenter(
         if (!isLoadingMore) {
             isLoadingMore = true
 
-            if (requestPageNum + 1 <= interactor.getTopRatedTotalPages()) {
+            if (requestPageNum + 1 <= moviesInteractor.getTopRatedTotalPages()) {
                 requestPageNum++
                 getTopRatedMovies()
             }

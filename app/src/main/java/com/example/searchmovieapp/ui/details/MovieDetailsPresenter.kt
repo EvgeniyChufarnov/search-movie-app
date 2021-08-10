@@ -1,11 +1,12 @@
 package com.example.searchmovieapp.ui.details
 
-import com.example.searchmovieapp.domain.ConnectionState
-import com.example.searchmovieapp.domain.ConnectionStateEvent
 import com.example.searchmovieapp.data.remote.entities.MovieDetailsEntity
 import com.example.searchmovieapp.data.remote.entities.MovieEntity
-import com.example.searchmovieapp.domain.Interactor
+import com.example.searchmovieapp.domain.ConnectionState
+import com.example.searchmovieapp.domain.ConnectionStateEvent
 import com.example.searchmovieapp.domain.data.ResultWrapper
+import com.example.searchmovieapp.domain.interactors.FavoritesInteractor
+import com.example.searchmovieapp.domain.interactors.MovieDetailsInteractor
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -18,7 +19,8 @@ private fun MovieDetailsEntity.toMovieEntity(): MovieEntity {
 }
 
 class MovieDetailsPresenter(
-    private val interactor: Interactor
+    private val movieDetailsInteractor: MovieDetailsInteractor,
+    private val favoritesInteractor: FavoritesInteractor
 ) :
     MovieDetailsContract.Presenter {
 
@@ -66,7 +68,7 @@ class MovieDetailsPresenter(
     }
 
     private suspend fun getMovieDetailsFromRepository(movieId: Int) =
-        interactor.getMovieDetails(movieId)
+        movieDetailsInteractor.getMovieDetails(movieId)
 
     override fun changeMovieFavoriteState(movieDetails: MovieDetailsEntity) {
         val movieEntity = movieDetails.toMovieEntity()
@@ -74,10 +76,10 @@ class MovieDetailsPresenter(
         scope.launch {
             if (movieEntity.isFavorite) {
                 movieDetails.isFavorite = false
-                interactor.removeFromFavorites(movieEntity)
+                favoritesInteractor.removeFromFavorites(movieEntity)
             } else {
                 movieDetails.isFavorite = true
-                interactor.addToFavorites(movieEntity)
+                favoritesInteractor.addToFavorites(movieEntity)
             }
         }
     }

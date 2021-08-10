@@ -1,18 +1,20 @@
 package com.example.searchmovieapp.ui.home
 
 import android.os.Parcelable
+import com.example.searchmovieapp.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.domain.ConnectionState
 import com.example.searchmovieapp.domain.ConnectionStateEvent
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
-import com.example.searchmovieapp.domain.Interactor
 import com.example.searchmovieapp.domain.data.ResultWrapper
+import com.example.searchmovieapp.domain.interactors.FavoritesInteractor
+import com.example.searchmovieapp.domain.interactors.MoviesInteractor
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 class HomePresenter(
-    private val interactor: Interactor
+    private val moviesInteractor: MoviesInteractor,
+    private val favoritesInteractor: FavoritesInteractor
 ) :
     HomeContract.Presenter {
 
@@ -71,7 +73,7 @@ class HomePresenter(
                         isFirstLoading = false
 
                         if (ConnectionState.isAvailable) {
-                            interactor.forcedUpdate()
+                            moviesInteractor.forcedUpdate()
                             getMovies()
                         }
                     }
@@ -132,8 +134,8 @@ class HomePresenter(
     private fun getAllCachedMovies() {
         scope.launch {
             view?.showMovies(
-                interactor.getAllLocalCachedNowPlayingMovies(),
-                interactor.getAllLocalCachedUpcomingMovies()
+                moviesInteractor.getAllLocalCachedNowPlayingMovies(),
+                moviesInteractor.getAllLocalCachedUpcomingMovies()
             )
 
             savedNowPlayingPosition?.let {
@@ -149,17 +151,17 @@ class HomePresenter(
     }
 
     private suspend fun requestNowPlayingMovies(pageNum: Int) =
-        interactor.getNowPlayingMovies(pageNum)
+        moviesInteractor.getNowPlayingMovies(pageNum)
 
     private suspend fun requestUpcomingMovies(pageNum: Int) =
-        interactor.getUpcomingMovies(pageNum)
+        moviesInteractor.getUpcomingMovies(pageNum)
 
     override fun changeMovieFavoriteState(movie: MovieEntity) {
         scope.launch {
             if (movie.isFavorite) {
-                interactor.removeFromFavorites(movie)
+                favoritesInteractor.removeFromFavorites(movie)
             } else {
-                interactor.addToFavorites(movie)
+                favoritesInteractor.addToFavorites(movie)
             }
 
             getAllCachedMovies()
@@ -169,7 +171,7 @@ class HomePresenter(
     override fun loadMoreNowPlaying() {
         if (!isLoadingMoreNowPlaying) {
             isLoadingMoreNowPlaying = true
-            if (requestNowPlayingPageNum + 1 <= interactor.getNowPlayingTotalPages()) {
+            if (requestNowPlayingPageNum + 1 <= moviesInteractor.getNowPlayingTotalPages()) {
                 requestNowPlayingPageNum++
                 getNowPlayingMovies()
             }
@@ -179,7 +181,7 @@ class HomePresenter(
     override fun loadMoreUpcoming() {
         if (!isLoadingMoreUpcoming) {
             isLoadingMoreUpcoming = true
-            if (requestUpcomingPageNum + 1 <= interactor.getUpcomingTotalPages()) {
+            if (requestUpcomingPageNum + 1 <= moviesInteractor.getUpcomingTotalPages()) {
                 requestUpcomingPageNum++
                 getUpcomingMovies()
             }

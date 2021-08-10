@@ -1,6 +1,8 @@
 package com.example.searchmovieapp.di
 
-import com.example.searchmovieapp.domain.Interactor
+import com.example.searchmovieapp.domain.interactors.FavoritesInteractor
+import com.example.searchmovieapp.domain.interactors.MovieDetailsInteractor
+import com.example.searchmovieapp.domain.interactors.MoviesInteractor
 import com.example.searchmovieapp.ui.details.MovieDetailsContract
 import com.example.searchmovieapp.ui.details.MovieDetailsPresenter
 import com.example.searchmovieapp.ui.favorites.FavoritesContract
@@ -20,24 +22,33 @@ import javax.inject.Singleton
 object PresentersModule {
     @Singleton
     @Provides
-    fun provideHomePresenter(interactor: Interactor): HomeContract.Presenter {
-        return HomePresenter(interactor)
+    fun provideHomePresenter(
+        moviesInteractor: MoviesInteractor,
+        favoritesInteractor: FavoritesInteractor
+    ): HomeContract.Presenter {
+        return HomePresenter(moviesInteractor, favoritesInteractor)
     }
 
     @Singleton
     @Provides
-    fun provideFavoritesPresenter(interactor: Interactor): FavoritesContract.Presenter {
-        return FavoritesPresenter(interactor)
+    fun provideFavoritesPresenter(favoritesInteractor: FavoritesInteractor): FavoritesContract.Presenter {
+        return FavoritesPresenter(favoritesInteractor)
     }
 
     @Singleton
     @Provides
-    fun provideRatingsPresenter(interactor: Interactor): RatingsContract.Presenter {
-        return RatingsPresenter(interactor)
+    fun provideRatingsPresenter(
+        moviesInteractor: MoviesInteractor,
+        favoritesInteractor: FavoritesInteractor
+    ): RatingsContract.Presenter {
+        return RatingsPresenter(moviesInteractor, favoritesInteractor)
     }
 
     @Provides
-    fun provideMovieDetailsPresenter(interactor: Interactor): MovieDetailsContract.Presenter {
-        return MovieDetailsPresenter(interactor)
+    fun provideMovieDetailsPresenter(
+        movieDetailsInteractor: MovieDetailsInteractor,
+        favoritesInteractor: FavoritesInteractor
+    ): MovieDetailsContract.Presenter {
+        return MovieDetailsPresenter(movieDetailsInteractor, favoritesInteractor)
     }
 }
