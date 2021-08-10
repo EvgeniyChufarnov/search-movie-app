@@ -65,6 +65,8 @@ class HomePresenter(
                 nowPlayingResult is ResultWrapper.Success && upcomingPlayingResult is ResultWrapper.Success -> {
                     view?.showMovies(nowPlayingResult.value, upcomingPlayingResult.value)
 
+                    view?.hideProgressBar()
+
                     if (isFirstLoading) {
                         isFirstLoading = false
 
@@ -73,8 +75,6 @@ class HomePresenter(
                             getMovies()
                         }
                     }
-
-                    view?.hideProgressBar()
                 }
                 nowPlayingResult is ResultWrapper.GenericError -> {
                     view?.showConnectionError(nowPlayingResult.error?.message)
