@@ -1,4 +1,4 @@
-package com.example.searchmovieapp
+package com.example.searchmovieapp.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.FragmentNavigationContainerBinding
 
 class NavigationContainerFragment : Fragment() {
@@ -24,16 +25,22 @@ class NavigationContainerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.bottomNavigation.setOnNavigationItemSelectedListener(this::navigate)
+        binding.bottomNavigation.setOnItemSelectedListener(::navigate)
+    }
 
-        navigateToFragment(HomeFragment())
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        binding.bottomNavigation.run {
+            navigate(menu.findItem(selectedItemId))
+        }
     }
 
     private fun navigate(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.item_home -> navigateToFragment(HomeFragment())
-            R.id.item_favorites -> navigateToFragment(HomeFragment())
-            R.id.item_ratings -> navigateToFragment(HomeFragment())
+            R.id.item_favorites -> navigateToFragment(FavoritesFragment())
+            R.id.item_ratings -> navigateToFragment(RatingsFragment())
         }
 
         return true

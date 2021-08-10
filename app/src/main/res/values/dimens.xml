@@ -6,4 +6,7 @@
     <dimen name="set_favorite_image_size">50dp</dimen>
     <dimen name="movie_title_size">40sp</dimen>
     <dimen name="poster_width">150dp</dimen>
+    <dimen name="min_item_width">100dp</dimen>
+    <dimen name="min_item_height">150dp</dimen>
+    <dimen name="set_favorite_image_size_small">30dp</dimen>
 </resources>

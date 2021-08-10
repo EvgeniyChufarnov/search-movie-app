@@ -1,4 +1,4 @@
-package com.example.searchmovieapp
+package com.example.searchmovieapp.ui
 
 import android.content.Context
 import android.os.Bundle
@@ -10,17 +10,20 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.searchmovieapp.adapters.MovieListAdapter
-import com.example.searchmovieapp.contracts.HomeScreenContract
+import com.example.searchmovieapp.contracts.HomeContract
 import com.example.searchmovieapp.databinding.FragmentHomeBinding
 import com.example.searchmovieapp.entities.MovieEntity
-import com.example.searchmovieapp.injection.MovieApplication
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class HomeFragment : Fragment(),
-    HomeScreenContract.View {
+    HomeContract.View {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private lateinit var presenter: HomeScreenContract.Presenter
+
+    @Inject
+    lateinit var presenter: HomeContract.Presenter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,16 +37,10 @@ class HomeFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        createPresenter()
         attachView()
         showNowPlayingProgressBar()
         showUpcomingProgressBar()
         initRecyclerViews()
-    }
-
-    private fun createPresenter() {
-        val appContainer = (requireActivity().application as MovieApplication).appContainer
-        presenter = appContainer.homePresenterFactory.create()
     }
 
     private fun attachView() {
@@ -57,7 +54,11 @@ class HomeFragment : Fragment(),
     }
 
     private fun initRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.adapter = MovieListAdapter(this::navigateToMovieDetailFragment)
+        recyclerView.adapter = MovieListAdapter(
+            false,
+            this::navigateToMovieDetailFragment,
+            this::changeMovieFavoriteState
+        )
         recyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
@@ -86,11 +87,14 @@ class HomeFragment : Fragment(),
 
     private fun updateAdapterDataSet(adapter: MovieListAdapter, data: List<MovieEntity>) {
         adapter.setData(data)
-        adapter.notifyDataSetChanged()
     }
 
     private fun navigateToMovieDetailFragment(movieId: Int) {
         (requireActivity() as Contract).navigateToMovieDetailFragment(movieId)
+    }
+
+    private fun changeMovieFavoriteState(movieId: Int) {
+        presenter.changeMovieFavoriteState(movieId)
     }
 
     private fun showNowPlayingProgressBar() {

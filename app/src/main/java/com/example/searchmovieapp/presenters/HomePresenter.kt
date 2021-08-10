@@ -1,16 +1,16 @@
 package com.example.searchmovieapp.presenters
 
-import com.example.searchmovieapp.contracts.HomeScreenContract
+import com.example.searchmovieapp.contracts.HomeContract
 import com.example.searchmovieapp.repositories.MovieRepository
 import kotlinx.coroutines.*
 
 class HomePresenter(private val movieRepository: MovieRepository) :
-    HomeScreenContract.Presenter {
+    HomeContract.Presenter {
 
-    private var view: HomeScreenContract.View? = null
+    private var view: HomeContract.View? = null
     private val scope = CoroutineScope(Job() + Dispatchers.Main)
 
-    override fun attach(view: HomeScreenContract.View) {
+    override fun attach(view: HomeContract.View) {
         this.view = view
     }
 
@@ -35,5 +35,9 @@ class HomePresenter(private val movieRepository: MovieRepository) :
 
     private suspend fun getUpcomingMovies() = withContext(Dispatchers.IO) {
         movieRepository.getUpcomingMovies()
+    }
+
+    override fun changeMovieFavoriteState(movieId: Int) {
+        movieRepository.changeMovieFavoriteState(movieId)
     }
 }

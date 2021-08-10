@@ -1,9 +1,14 @@
-package com.example.searchmovieapp
+package com.example.searchmovieapp.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.searchmovieapp.R
+import dagger.hilt.android.AndroidEntryPoint
 
-class MainActivity : AppCompatActivity(), HomeFragment.Contract {
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity(), HomeFragment.Contract, FavoritesFragment.Contract,
+    RatingsFragment.Contract {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

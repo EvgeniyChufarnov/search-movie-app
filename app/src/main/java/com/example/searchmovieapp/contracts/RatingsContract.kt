@@ -1,16 +1,16 @@
 package com.example.searchmovieapp.contracts
 
-import com.example.searchmovieapp.entities.MovieDetailsEntity
+import com.example.searchmovieapp.entities.MovieEntity
 
-interface MovieDetailsContract {
+interface RatingsContract {
     interface View {
-        fun showDetails(movieDetails: MovieDetailsEntity)
+        fun showMovies(movies: List<MovieEntity>)
     }
 
     interface Presenter {
         fun attach(view: View)
         fun detach()
-        fun getMovieDetails(movieId: Int)
+        fun getTopRatedMovies()
         fun changeMovieFavoriteState(movieId: Int)
     }
 }

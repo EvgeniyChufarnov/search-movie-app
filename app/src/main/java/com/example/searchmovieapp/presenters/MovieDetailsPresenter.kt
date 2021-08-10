@@ -28,4 +28,8 @@ class MovieDetailsPresenter(private val movieRepository: MovieRepository) :
     private suspend fun getMovieDetailsFromRepository(movieId: Int) = withContext(Dispatchers.IO) {
         movieRepository.getMovieDetailsById(movieId)
     }
+
+    override fun changeMovieFavoriteState(movieId: Int) {
+        movieRepository.changeMovieFavoriteState(movieId)
+    }
 }
