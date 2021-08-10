@@ -1,6 +1,6 @@
 package com.example.searchmovieapp.ui.details
 
-import com.example.searchmovieapp.entities.MovieDetailsEntity
+import com.example.searchmovieapp.data.remote.entities.MovieDetailsEntity
 
 interface MovieDetailsContract {
     interface View {
@@ -8,12 +8,13 @@ interface MovieDetailsContract {
         fun showOnLostConnectionMessage()
         fun hideOnLostConnectionMessage()
         fun showConnectionError(message: String?)
+        fun showProgressBar()
+        fun hideProgressBar()
     }
 
     interface Presenter {
-        fun attach(view: View)
+        fun attach(view: View, movieId: Int)
         fun detach()
-        fun getMovieDetails(movieId: Int)
         fun changeMovieFavoriteState(movieDetails: MovieDetailsEntity)
     }
 }

@@ -30,6 +30,7 @@
                 android:layout_height="@dimen/set_favorite_image_size"
                 android:layout_margin="@dimen/short_margin"
                 android:src="@drawable/ic_favorite_border"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/main_title_text_view"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -87,6 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/short_margin"
                 android:src="@drawable/ic_star"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/ratings_text_view"
                 app:layout_constraintStart_toEndOf="@id/ratings_text_view"
                 app:layout_constraintTop_toTopOf="@id/ratings_text_view" />

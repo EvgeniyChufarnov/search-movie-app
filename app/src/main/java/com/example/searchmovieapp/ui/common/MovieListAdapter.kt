@@ -7,7 +7,7 @@ import com.bumptech.glide.Glide
 import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.ItemNowPlayingBinding
 import com.example.searchmovieapp.databinding.ItemUpcomingBinding
-import com.example.searchmovieapp.entities.MovieEntity
+import com.example.searchmovieapp.data.remote.entities.MovieEntity
 
 private const val NOW_PLAYING_MOVIE_TYPE = 0
 private const val UPCOMING_MOVIE_TYPE = 1

@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.FragmentMovieDetailsBinding
-import com.example.searchmovieapp.entities.MovieDetailsEntity
+import com.example.searchmovieapp.data.remote.entities.MovieDetailsEntity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.properties.Delegates
@@ -25,10 +25,7 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
 
     @Inject
     lateinit var presenter: MovieDetailsContract.Presenter
-
-    private var movieId by Delegates.notNull<Int>()
     private var movieDetails: MovieDetailsEntity? = null
-    private var isLoaded: Boolean = false
 
     companion object Instance {
         fun getInstance(movieId: Int) = MovieDetailsFragment().apply {
@@ -50,19 +47,20 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        getMovieIdFromArguments()
-        attachView()
-        showProgressBar()
+        presenter.attach(this, getMovieId())
         setMakeFavoriteListener()
-        requestMovieDetails()
     }
 
-    private fun getMovieIdFromArguments() {
+    private fun getMovieId(): Int {
+        var movieId = 0
+
         arguments?.run {
             if (containsKey(MOVIE_ID_EXTRA_KEY)) {
                 movieId = getInt(MOVIE_ID_EXTRA_KEY)
             }
         }
+
+        return movieId
     }
 
     private fun setMakeFavoriteListener() {
@@ -78,14 +76,6 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
         binding.setFavoriteImageView.setImageResource(
             if (isFavorite) R.drawable.ic_favorite else R.drawable.ic_favorite_border
         )
-    }
-
-    private fun attachView() {
-        presenter.attach(this)
-    }
-
-    private fun requestMovieDetails() {
-        presenter.getMovieDetails(movieId)
     }
 
     override fun onDestroyView() {
@@ -120,37 +110,26 @@ class MovieDetailsFragment : Fragment(), MovieDetailsContract.View {
             changeFavoriteButtonImage(isFavorite)
         }
 
-        hideProgressBar()
+        binding.starImageView.isVisible = true
+        binding.setFavoriteImageView.isVisible = true
+
         setPoster(movieDetails.posterPath)
-        isLoaded = true
     }
 
-    private fun showProgressBar() {
+    override fun showProgressBar() {
         binding.loadingProcessBar.isVisible = true
     }
 
-    private fun hideProgressBar() {
+    override fun hideProgressBar() {
         binding.loadingProcessBar.isVisible = false
     }
 
     override fun showOnLostConnectionMessage() {
         binding.noConnectionMessageLayout.isVisible = true
-        hideProgressBar()
-
-        if (!isLoaded) {
-            binding.starImageView.isVisible = false
-            binding.setFavoriteImageView.isVisible = false
-        }
     }
 
     override fun hideOnLostConnectionMessage() {
         binding.noConnectionMessageLayout.isVisible = false
-
-        if (!isLoaded) {
-            binding.starImageView.isVisible = true
-            binding.setFavoriteImageView.isVisible = true
-            showProgressBar()
-        }
     }
 
     override fun showConnectionError(message: String?) {

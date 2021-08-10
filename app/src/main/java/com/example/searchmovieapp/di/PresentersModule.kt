@@ -1,8 +1,8 @@
 package com.example.searchmovieapp.di
 
-import com.example.searchmovieapp.repositories.FavoritesRepository
-import com.example.searchmovieapp.repositories.MovieDetailsRepository
-import com.example.searchmovieapp.repositories.MoviesRepository
+import com.example.searchmovieapp.domain.interactors.FavoritesInteractor
+import com.example.searchmovieapp.domain.interactors.MovieDetailsInteractor
+import com.example.searchmovieapp.domain.interactors.MoviesInteractor
 import com.example.searchmovieapp.ui.details.MovieDetailsContract
 import com.example.searchmovieapp.ui.details.MovieDetailsPresenter
 import com.example.searchmovieapp.ui.favorites.FavoritesContract
@@ -19,36 +19,36 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class PresentersModule {
+object PresentersModule {
     @Singleton
     @Provides
     fun provideHomePresenter(
-        moviesRepository: MoviesRepository,
-        favoritesRepository: FavoritesRepository
+        moviesInteractor: MoviesInteractor,
+        favoritesInteractor: FavoritesInteractor
     ): HomeContract.Presenter {
-        return HomePresenter(moviesRepository, favoritesRepository)
+        return HomePresenter(moviesInteractor, favoritesInteractor)
     }
 
     @Singleton
     @Provides
-    fun provideFavoritesPresenter(favoritesRepository: FavoritesRepository): FavoritesContract.Presenter {
-        return FavoritesPresenter(favoritesRepository)
+    fun provideFavoritesPresenter(favoritesInteractor: FavoritesInteractor): FavoritesContract.Presenter {
+        return FavoritesPresenter(favoritesInteractor)
     }
 
     @Singleton
     @Provides
     fun provideRatingsPresenter(
-        moviesRepository: MoviesRepository,
-        favoritesRepository: FavoritesRepository
+        moviesInteractor: MoviesInteractor,
+        favoritesInteractor: FavoritesInteractor
     ): RatingsContract.Presenter {
-        return RatingsPresenter(moviesRepository, favoritesRepository)
+        return RatingsPresenter(moviesInteractor, favoritesInteractor)
     }
 
     @Provides
     fun provideMovieDetailsPresenter(
-        movieDetailsRepository: MovieDetailsRepository,
-        favoritesRepository: FavoritesRepository
+        movieDetailsInteractor: MovieDetailsInteractor,
+        favoritesInteractor: FavoritesInteractor
     ): MovieDetailsContract.Presenter {
-        return MovieDetailsPresenter(movieDetailsRepository, favoritesRepository)
+        return MovieDetailsPresenter(movieDetailsInteractor, favoritesInteractor)
     }
 }

@@ -12,8 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.searchmovieapp.R
+import com.example.searchmovieapp.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.databinding.FragmentHomeBinding
-import com.example.searchmovieapp.entities.MovieEntity
 import com.example.searchmovieapp.ui.common.MovieListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -25,9 +25,6 @@ class HomeFragment : Fragment(),
     HomeContract.View {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private var isFirstLoaded: Boolean = false
-    private var isLoadingMoreNowPlaying = false
-    private var isLoadingMoreUpcoming = false
 
     @Inject
     lateinit var presenter: HomeContract.Presenter
@@ -44,32 +41,20 @@ class HomeFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        attachView()
         initRecyclerViews()
-
-        if (presenter.isFirstLoading()) {
-            showNowPlayingProgressBar()
-            showUpcomingProgressBar()
-            presenter.getMovies()
-        } else {
-            presenter.getAllCachedMovies()
-        }
-    }
-
-    private fun attachView() {
         presenter.attach(this)
     }
 
     private fun initRecyclerViews() {
-        initRecyclerView(binding.nowPlayingRecyclerView, this::loadMoreNowPlaying)
-        initRecyclerView(binding.upcomingRecyclerView, this::loadMoreUpcoming)
+        initRecyclerView(binding.nowPlayingRecyclerView, presenter::loadMoreNowPlaying)
+        initRecyclerView(binding.upcomingRecyclerView, presenter::loadMoreUpcoming)
     }
 
     private fun initRecyclerView(recyclerView: RecyclerView, onLoadMore: () -> Unit) {
         recyclerView.adapter = MovieListAdapter(
             false,
-            this::navigateToMovieDetailFragment,
-            this::changeMovieFavoriteState
+            presenter::navigateToMovieDetailFragment,
+            presenter::changeMovieFavoriteState
         )
         val layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -88,62 +73,26 @@ class HomeFragment : Fragment(),
         })
     }
 
-    private fun loadMoreNowPlaying() {
-        if (!isLoadingMoreNowPlaying) {
-            isLoadingMoreNowPlaying = true
-            presenter.loadMoreNowPlaying()
-        }
-    }
-
-    private fun loadMoreUpcoming() {
-        if (!isLoadingMoreUpcoming) {
-            isLoadingMoreUpcoming = true
-            presenter.loadMoreUpcoming()
-        }
-    }
-
     override fun onDestroyView() {
         _binding = null
         presenter.detach()
         super.onDestroyView()
     }
 
-    override fun showNowPlaying(nowPlayingMovies: List<MovieEntity>) {
-        if (isLoadingMoreNowPlaying) {
-            isLoadingMoreNowPlaying = false
-            (binding.nowPlayingRecyclerView.adapter as MovieListAdapter).addData(nowPlayingMovies)
-        } else {
-            (binding.nowPlayingRecyclerView.adapter as MovieListAdapter).setData(nowPlayingMovies)
-        }
-
-        if (presenter.isFirstLoading()) {
-            if (!isFirstLoaded) {
-                isFirstLoaded = true
-            } else {
-                presenter.firstLoadingDone()
-            }
-        }
-
-        hideNowPlayingProgressBar()
+    override fun showMovies(
+        nowPlayingMovies: List<MovieEntity>,
+        upcomingMovies: List<MovieEntity>
+    ) {
+        (binding.nowPlayingRecyclerView.adapter as MovieListAdapter).setData(nowPlayingMovies)
+        (binding.upcomingRecyclerView.adapter as MovieListAdapter).setData(upcomingMovies)
     }
 
-    override fun showUpcoming(upcomingMovies: List<MovieEntity>) {
-        if (isLoadingMoreUpcoming) {
-            isLoadingMoreUpcoming = false
-            (binding.upcomingRecyclerView.adapter as MovieListAdapter).addData(upcomingMovies)
-        } else {
-            (binding.upcomingRecyclerView.adapter as MovieListAdapter).setData(upcomingMovies)
-        }
+    override fun showMoreNowPlaying(nowPlayingMovies: List<MovieEntity>) {
+        (binding.nowPlayingRecyclerView.adapter as MovieListAdapter).addData(nowPlayingMovies)
+    }
 
-        if (presenter.isFirstLoading()) {
-            if (!isFirstLoaded) {
-                isFirstLoaded = true
-            } else {
-                presenter.firstLoadingDone()
-            }
-        }
-
-        hideUpcomingProgressBar()
+    override fun showMoreUpcoming(upcomingMovies: List<MovieEntity>) {
+        (binding.upcomingRecyclerView.adapter as MovieListAdapter).addData(upcomingMovies)
     }
 
     override fun restoreNowPlayingRecyclerViewPosition(position: Parcelable) {
@@ -154,59 +103,32 @@ class HomeFragment : Fragment(),
         binding.upcomingRecyclerView.layoutManager?.onRestoreInstanceState(position)
     }
 
-    private fun navigateToMovieDetailFragment(movieId: Int) {
-        saveRecyclerViewState()
+    override fun navigateToMovieDetailFragment(movieId: Int) {
         (requireActivity() as Contract).navigateToMovieDetailFragment(movieId)
     }
 
-    private fun saveRecyclerViewState() {
-        val nowPlayingRecyclerViewState =
-            binding.nowPlayingRecyclerView.layoutManager?.onSaveInstanceState()
-        val upcomingRecyclerViewState =
-            binding.upcomingRecyclerView.layoutManager?.onSaveInstanceState()
+    override fun getNowPlayingRecyclerViewState() =
+        binding.nowPlayingRecyclerView.layoutManager?.onSaveInstanceState()
 
-        nowPlayingRecyclerViewState?.let {
-            presenter.saveNowPlayingRecyclerViewPosition(it)
-        }
+    override fun getUpcomingRecyclerViewState() =
+        binding.upcomingRecyclerView.layoutManager?.onSaveInstanceState()
 
-        upcomingRecyclerViewState?.let {
-            presenter.saveUpcomingRecyclerRecyclerViewPosition(it)
-        }
-    }
-
-    private fun changeMovieFavoriteState(movie: MovieEntity) {
-        presenter.changeMovieFavoriteState(movie)
-    }
-
-    private fun showNowPlayingProgressBar() {
+    override fun showProgressBar() {
         binding.nowPlayingProgressBar.isVisible = true
-    }
-
-    private fun hideNowPlayingProgressBar() {
-        binding.nowPlayingProgressBar.isVisible = false
-    }
-
-    private fun showUpcomingProgressBar() {
         binding.upcomingProgressBar.isVisible = true
     }
 
-    private fun hideUpcomingProgressBar() {
+    override fun hideProgressBar() {
+        binding.nowPlayingProgressBar.isVisible = false
         binding.upcomingProgressBar.isVisible = false
     }
 
     override fun showOnLostConnectionMessage() {
         binding.noConnectionMessageLayout.isVisible = true
-        hideNowPlayingProgressBar()
-        hideUpcomingProgressBar()
     }
 
     override fun hideOnLostConnectionMessage() {
         binding.noConnectionMessageLayout.isVisible = false
-
-        if (presenter.isFirstLoading()) {
-            showNowPlayingProgressBar()
-            showUpcomingProgressBar()
-        }
     }
 
     override fun showConnectionError(message: String?) {
