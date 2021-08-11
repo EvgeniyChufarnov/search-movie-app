@@ -14,4 +14,5 @@
     <string name="loading_error">Cannot load movies</string>
     <string name="no_internet_connection_available">No internet connection available</string>
     <string name="default_network_error">Unable to connect to the server</string>
+    <string name="cinemas">Cinemas</string>
 </resources>
