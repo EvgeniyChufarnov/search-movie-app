@@ -10,12 +10,13 @@ import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.FragmentNavigationContainerBinding
 import com.example.searchmovieapp.ui.favorites.FavoritesFragment
 import com.example.searchmovieapp.ui.home.HomeFragment
+import com.example.searchmovieapp.ui.map.MapFragment
 import com.example.searchmovieapp.ui.ratings.RatingsFragment
 
 private const val CURRENT_FRAGMENT_TAG = "current fragment"
 
 private enum class CurrentFragment {
-    HOME, FAVORITES, RATINGS
+    HOME, FAVORITES, RATINGS, MAP
 }
 
 class NavigationContainerFragment : Fragment() {
@@ -64,6 +65,12 @@ class NavigationContainerFragment : Fragment() {
                 if (isFirstStart || currentFragment != CurrentFragment.RATINGS) {
                     currentFragment = CurrentFragment.RATINGS
                     navigateToFragment(RatingsFragment())
+                }
+            }
+            R.id.item_map -> {
+                if (isFirstStart || currentFragment != CurrentFragment.MAP) {
+                    currentFragment = CurrentFragment.MAP
+                    navigateToFragment(MapFragment())
                 }
             }
         }
