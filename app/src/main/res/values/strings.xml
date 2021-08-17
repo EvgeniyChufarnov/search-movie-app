@@ -14,5 +14,13 @@
     <string name="loading_error">Cannot load movies</string>
     <string name="no_internet_connection_available">No internet connection available</string>
     <string name="default_network_error">Unable to connect to the server</string>
-    <string name="cinemas">Cinemas</string>
+    <string name="map">Map</string>
+    <string name="dialog_rationale_title">Доступ к геолокации</string>
+    <string name="dialog_rationale_message">Данные разрешения необходимы для отображения Вашего местоположения</string>
+    <string name="dialog_rationale_give_access">Предоставить доступ</string>
+    <string name="dialog_rationale_decline">Не предоставлять</string>
+    <string name="dialog_on_refuse_title">Геолокация</string>
+    <string name="dialog_on_refuse_message">Невозможно определить местоположение!</string>
+    <string name="dialog_on_refuse_decline">Закрыть</string>
+    <string name="your_location">Your location</string>
 </resources>

@@ -10,6 +10,7 @@ import com.example.searchmovieapp.R
 import com.example.searchmovieapp.databinding.FragmentNavigationContainerBinding
 import com.example.searchmovieapp.ui.favorites.FavoritesFragment
 import com.example.searchmovieapp.ui.home.HomeFragment
+import com.example.searchmovieapp.ui.map.MapFragment
 import com.example.searchmovieapp.ui.ratings.RatingsFragment
 
 private const val CURRENT_FRAGMENT_TAG = "current fragment"
@@ -69,7 +70,7 @@ class NavigationContainerFragment : Fragment() {
             R.id.item_map -> {
                 if (isFirstStart || currentFragment != CurrentFragment.MAP) {
                     currentFragment = CurrentFragment.MAP
-                    navigateToFragment(MapsFragment())
+                    navigateToFragment(MapFragment())
                 }
             }
         }

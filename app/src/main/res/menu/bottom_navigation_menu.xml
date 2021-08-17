@@ -19,5 +19,5 @@
         android:id="@+id/item_map"
         android:enabled="true"
         android:icon="@drawable/ic_map"
-        android:title="@string/cinemas" />
+        android:title="@string/map" />
 </menu>

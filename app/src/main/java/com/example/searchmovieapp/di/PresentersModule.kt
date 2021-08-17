@@ -9,6 +9,8 @@ import com.example.searchmovieapp.ui.favorites.FavoritesContract
 import com.example.searchmovieapp.ui.favorites.FavoritesPresenter
 import com.example.searchmovieapp.ui.home.HomeContract
 import com.example.searchmovieapp.ui.home.HomePresenter
+import com.example.searchmovieapp.ui.map.MapContract
+import com.example.searchmovieapp.ui.map.MapPresenter
 import com.example.searchmovieapp.ui.ratings.RatingsContract
 import com.example.searchmovieapp.ui.ratings.RatingsPresenter
 import dagger.Module
@@ -50,5 +52,10 @@ object PresentersModule {
         favoritesInteractor: FavoritesInteractor
     ): MovieDetailsContract.Presenter {
         return MovieDetailsPresenter(movieDetailsInteractor, favoritesInteractor)
+    }
+
+    @Provides
+    fun provideMapPresenter(): MapContract.Presenter {
+        return MapPresenter()
     }
 }
