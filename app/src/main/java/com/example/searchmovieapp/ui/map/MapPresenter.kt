@@ -111,6 +111,10 @@ class MapPresenter : MapContract.Presenter {
         }
     }
 
+    override fun onLocationServicesTurnedOn() {
+        startLocationUpdates()
+    }
+
     @SuppressLint("MissingPermission")
     private fun getLastLocation() {
         fusedLocationClient?.lastLocation

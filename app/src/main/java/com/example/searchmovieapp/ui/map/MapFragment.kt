@@ -2,12 +2,14 @@ package com.example.searchmovieapp.ui.map
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -25,7 +27,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-private const val REQUEST_CHECK_SETTINGS = 1
 private const val ZOOM = 15f
 
 @AndroidEntryPoint
@@ -46,6 +47,15 @@ class MapFragment : Fragment(), MapContract.View {
 
             if (isPermissionGranted) {
                 presenter.onPermissionsGranted()
+            } else {
+                presenter.onPermissionsDenied()
+            }
+        }
+
+    private val launcherForResult =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                presenter.onLocationServicesTurnedOn()
             } else {
                 presenter.onPermissionsDenied()
             }
@@ -146,9 +156,9 @@ class MapFragment : Fragment(), MapContract.View {
     }
 
     override fun startResolutionForResult(exception: ResolvableApiException) {
-        exception.startResolutionForResult(requireActivity(), REQUEST_CHECK_SETTINGS)
+        val intentSenderRequest = IntentSenderRequest.Builder(exception.resolution).build()
+        launcherForResult.launch(intentSenderRequest)
     }
-
 
     override fun addMarkerToMap(location: Location) {
         map.clear()
