@@ -19,6 +19,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/short_margin"
                 android:textSize="@dimen/movie_title_size"
+                app:layout_constraintBottom_toTopOf="@id/original_title_text_view"
                 app:layout_constraintEnd_toStartOf="@id/set_favorite_image_view"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
