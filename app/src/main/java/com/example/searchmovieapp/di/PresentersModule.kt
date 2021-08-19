@@ -1,51 +1,63 @@
 package com.example.searchmovieapp.di
 
-import com.example.searchmovieapp.contracts.FavoritesContract
-import com.example.searchmovieapp.contracts.HomeContract
-import com.example.searchmovieapp.contracts.MovieDetailsContract
-import com.example.searchmovieapp.contracts.RatingsContract
-import com.example.searchmovieapp.presenters.FavoritesPresenter
-import com.example.searchmovieapp.presenters.HomePresenter
-import com.example.searchmovieapp.presenters.MovieDetailsPresenter
-import com.example.searchmovieapp.presenters.RatingsPresenter
-import com.example.searchmovieapp.repositories.MovieRepository
+import com.example.searchmovieapp.domain.interactors.FavoritesInteractor
+import com.example.searchmovieapp.domain.interactors.MovieDetailsInteractor
+import com.example.searchmovieapp.domain.interactors.MoviesInteractor
+import com.example.searchmovieapp.domain.interactors.WorkInteractor
+import com.example.searchmovieapp.ui.details.MovieDetailsContract
+import com.example.searchmovieapp.ui.details.MovieDetailsPresenter
+import com.example.searchmovieapp.ui.favorites.FavoritesContract
+import com.example.searchmovieapp.ui.favorites.FavoritesPresenter
+import com.example.searchmovieapp.ui.home.HomeContract
+import com.example.searchmovieapp.ui.home.HomePresenter
+import com.example.searchmovieapp.ui.map.MapContract
+import com.example.searchmovieapp.ui.map.MapPresenter
+import com.example.searchmovieapp.ui.ratings.RatingsContract
+import com.example.searchmovieapp.ui.ratings.RatingsPresenter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.FragmentComponent
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
-@InstallIn(FragmentComponent::class)
+@InstallIn(SingletonComponent::class)
 @Module
-class HomePresenterModule {
+object PresentersModule {
+    @Singleton
     @Provides
-    fun provideHomePresenter(movieRepository: MovieRepository): HomeContract.Presenter {
-        return HomePresenter(movieRepository)
+    fun provideHomePresenter(
+        moviesInteractor: MoviesInteractor,
+        favoritesInteractor: FavoritesInteractor,
+        workInteractor: WorkInteractor
+    ): HomeContract.Presenter {
+        return HomePresenter(moviesInteractor, favoritesInteractor, workInteractor)
     }
-}
 
-@InstallIn(FragmentComponent::class)
-@Module
-class MovieDetailsPresenterModule {
+    @Singleton
     @Provides
-    fun provideMovieDetailsPresenter(movieRepository: MovieRepository): MovieDetailsContract.Presenter {
-        return MovieDetailsPresenter(movieRepository)
+    fun provideFavoritesPresenter(favoritesInteractor: FavoritesInteractor): FavoritesContract.Presenter {
+        return FavoritesPresenter(favoritesInteractor)
     }
-}
 
-@InstallIn(FragmentComponent::class)
-@Module
-class FavoritesPresenterModule {
+    @Singleton
     @Provides
-    fun provideFavoritesPresenter(movieRepository: MovieRepository): FavoritesContract.Presenter {
-        return FavoritesPresenter(movieRepository)
+    fun provideRatingsPresenter(
+        moviesInteractor: MoviesInteractor,
+        favoritesInteractor: FavoritesInteractor
+    ): RatingsContract.Presenter {
+        return RatingsPresenter(moviesInteractor, favoritesInteractor)
     }
-}
 
-@InstallIn(FragmentComponent::class)
-@Module
-class RatingsPresenterModule {
     @Provides
-    fun provideRatingsPresenter(movieRepository: MovieRepository): RatingsContract.Presenter {
-        return RatingsPresenter(movieRepository)
+    fun provideMovieDetailsPresenter(
+        movieDetailsInteractor: MovieDetailsInteractor,
+        favoritesInteractor: FavoritesInteractor
+    ): MovieDetailsContract.Presenter {
+        return MovieDetailsPresenter(movieDetailsInteractor, favoritesInteractor)
+    }
+
+    @Provides
+    fun provideMapPresenter(): MapContract.Presenter {
+        return MapPresenter()
     }
 }

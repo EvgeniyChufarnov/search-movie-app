@@ -19,6 +19,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/short_margin"
                 android:textSize="@dimen/movie_title_size"
+                app:layout_constraintBottom_toTopOf="@id/original_title_text_view"
                 app:layout_constraintEnd_toStartOf="@id/set_favorite_image_view"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -30,6 +31,7 @@
                 android:layout_height="@dimen/set_favorite_image_size"
                 android:layout_margin="@dimen/short_margin"
                 android:src="@drawable/ic_favorite_border"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/main_title_text_view"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -87,6 +89,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/short_margin"
                 android:src="@drawable/ic_star"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/ratings_text_view"
                 app:layout_constraintStart_toEndOf="@id/ratings_text_view"
                 app:layout_constraintTop_toTopOf="@id/ratings_text_view" />
@@ -152,4 +155,23 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
     </FrameLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/no_connection_message_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/no_connection_message_height"
+        android:layout_gravity="bottom"
+        android:layout_margin="@dimen/main_margin"
+        android:backgroundTint="@color/black"
+        android:visibility="gone"
+        app:cardCornerRadius="@dimen/no_connection_message_radius">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/no_internet_connection_available"
+            android:textAlignment="center"
+            android:textColor="@color/white" />
+    </androidx.cardview.widget.CardView>
 </FrameLayout>
