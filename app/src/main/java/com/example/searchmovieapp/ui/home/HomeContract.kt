@@ -1,7 +1,7 @@
 package com.example.searchmovieapp.ui.home
 
 import android.os.Parcelable
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.domain.data.remote.entities.MovieEntity
 
 interface HomeContract {
     interface View {
@@ -18,6 +18,8 @@ interface HomeContract {
         fun navigateToMovieDetailFragment(movieId: Int)
         fun getNowPlayingRecyclerViewState(): Parcelable?
         fun getUpcomingRecyclerViewState(): Parcelable?
+        fun showNotificationSetSuccessfullyMessage()
+        fun showNotificationSetFailedMessage()
     }
 
     interface Presenter {
@@ -25,6 +27,7 @@ interface HomeContract {
         fun detach()
         fun navigateToMovieDetailFragment(movieId: Int)
         fun changeMovieFavoriteState(movie: MovieEntity)
+        fun changeMovieNotificationState(movie: MovieEntity)
         fun loadMoreNowPlaying()
         fun loadMoreUpcoming()
     }

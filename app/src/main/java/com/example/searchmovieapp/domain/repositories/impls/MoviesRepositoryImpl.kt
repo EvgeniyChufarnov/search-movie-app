@@ -1,7 +1,7 @@
 package com.example.searchmovieapp.domain.repositories.impls
 
 import com.example.searchmovieapp.data.remote.MoviesService
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.domain.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.domain.data.ResultWrapper
 import com.example.searchmovieapp.domain.data.safeApiCall
 import com.example.searchmovieapp.domain.repositories.MoviesRepository

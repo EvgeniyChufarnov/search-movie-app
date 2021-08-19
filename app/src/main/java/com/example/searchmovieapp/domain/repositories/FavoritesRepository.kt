@@ -1,6 +1,6 @@
 package com.example.searchmovieapp.domain.repositories
 
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.domain.data.remote.entities.MovieEntity
 
 interface FavoritesRepository {
     suspend fun addToFavorites(movie: MovieEntity)

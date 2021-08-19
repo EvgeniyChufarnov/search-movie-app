@@ -1,6 +1,6 @@
 package com.example.searchmovieapp.domain.interactors.impls
 
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.domain.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.domain.interactors.FavoritesInteractor
 import com.example.searchmovieapp.domain.repositories.FavoritesRepository
 import kotlinx.coroutines.sync.Mutex

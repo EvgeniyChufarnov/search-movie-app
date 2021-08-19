@@ -1,9 +1,10 @@
 package com.example.searchmovieapp.domain.interactors.impls
 
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.domain.data.ResultWrapper
+import com.example.searchmovieapp.domain.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.domain.interactors.FavoritesInteractor
 import com.example.searchmovieapp.domain.interactors.MoviesInteractor
+import com.example.searchmovieapp.domain.interactors.WorkInteractor
 import com.example.searchmovieapp.domain.repositories.LocalMoviesRepository
 import com.example.searchmovieapp.domain.repositories.MoviesRepository
 import javax.inject.Inject
@@ -14,6 +15,7 @@ class MoviesInteractorImpl @Inject constructor(
     private val moviesRepository: MoviesRepository,
     private val localMoviesRepository: LocalMoviesRepository,
     private val favoritesInteractor: FavoritesInteractor,
+    private val workInteractor: WorkInteractor,
     private val language: String
 ) : MoviesInteractor {
     private var isForcedUpdateNeeded = false
@@ -85,6 +87,7 @@ class MoviesInteractorImpl @Inject constructor(
         return if (localCache is ResultWrapper.Success && localCache.value.isNotEmpty()) {
             isForcedUpdateNeeded = true
             localCache.checkFavoritesState()
+            localCache.checkNotificationsState()
         } else {
             val result = moviesRepository.getUpcomingMovies(page, language)
 
@@ -93,6 +96,7 @@ class MoviesInteractorImpl @Inject constructor(
             }
 
             result.checkFavoritesState()
+                .checkNotificationsState()
         }
     }
 
@@ -122,11 +126,14 @@ class MoviesInteractorImpl @Inject constructor(
     }
 
     override suspend fun getAllLocalCachedUpcomingMovies(): List<MovieEntity> {
-        return localMoviesRepository.getAllLocalCachedUpcomingMovies(language).checkFavoritesState()
+        return localMoviesRepository.getAllLocalCachedUpcomingMovies(language)
+            .checkFavoritesState()
+            .checkNotificationsState()
     }
 
     override suspend fun getAllLocalCachedTopRatedMovies(): List<MovieEntity> {
-        return localMoviesRepository.getAllLocalCachedTopRatedMovies(language).checkFavoritesState()
+        return localMoviesRepository.getAllLocalCachedTopRatedMovies(language)
+            .checkFavoritesState()
     }
 
     private suspend fun ResultWrapper<List<MovieEntity>>.checkFavoritesState(): ResultWrapper<List<MovieEntity>> {
@@ -139,6 +146,19 @@ class MoviesInteractorImpl @Inject constructor(
 
     private suspend fun List<MovieEntity>.checkFavoritesState(): List<MovieEntity> {
         forEach { it.isFavorite = favoritesInteractor.isMovieFavorite(it.id) }
+        return this
+    }
+
+    private fun ResultWrapper<List<MovieEntity>>.checkNotificationsState(): ResultWrapper<List<MovieEntity>> {
+        if (this is ResultWrapper.Success) {
+            value.checkNotificationsState()
+        }
+
+        return this
+    }
+
+    private fun List<MovieEntity>.checkNotificationsState(): List<MovieEntity> {
+        forEach { it.isNotificationSet = workInteractor.isWorkRegistered(it.id) }
         return this
     }
 }

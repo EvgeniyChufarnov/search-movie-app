@@ -1,7 +1,7 @@
 package com.example.searchmovieapp.domain.repositories
 
 import com.example.searchmovieapp.domain.data.ResultWrapper
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.domain.data.remote.entities.MovieEntity
 
 interface LocalMoviesRepository {
     suspend fun getNowPlayingMovies(page: Int, language: String): ResultWrapper<List<MovieEntity>>

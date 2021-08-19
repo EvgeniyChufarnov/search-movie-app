@@ -1,5 +1,6 @@
 package com.example.searchmovieapp.data.remote.entities
 
+import com.example.searchmovieapp.domain.data.remote.entities.MovieEntity
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 

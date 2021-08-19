@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.domain.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.databinding.FragmentFavoritesBinding
 import com.example.searchmovieapp.ui.common.MovieListAdapter
 import dagger.hilt.android.AndroidEntryPoint

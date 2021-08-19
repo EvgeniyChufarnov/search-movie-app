@@ -1,4 +1,4 @@
-package com.example.searchmovieapp.data.remote.entities
+package com.example.searchmovieapp.domain.data.remote.entities
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -13,4 +13,5 @@ data class MovieEntity(
 ) {
     var isUpcoming: Boolean = true
     var isFavorite: Boolean = false
+    var isNotificationSet: Boolean = false
 }

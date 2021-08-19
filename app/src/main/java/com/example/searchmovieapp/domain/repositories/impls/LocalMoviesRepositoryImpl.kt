@@ -3,7 +3,7 @@ package com.example.searchmovieapp.domain.repositories.impls
 import com.example.searchmovieapp.data.local.MoviesDao
 import com.example.searchmovieapp.data.local.entities.CachedMovieEntity
 import com.example.searchmovieapp.data.local.entities.MovieEntityType
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.domain.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.domain.data.ResultWrapper
 import com.example.searchmovieapp.domain.repositories.LocalMoviesRepository
 import kotlinx.coroutines.CoroutineDispatcher

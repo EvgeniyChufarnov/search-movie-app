@@ -1,7 +1,7 @@
 package com.example.searchmovieapp.ui.details
 
 import com.example.searchmovieapp.data.remote.entities.MovieDetailsEntity
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.domain.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.domain.ConnectionState
 import com.example.searchmovieapp.domain.ConnectionStateEvent
 import com.example.searchmovieapp.domain.data.ResultWrapper

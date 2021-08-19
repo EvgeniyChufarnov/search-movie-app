@@ -2,12 +2,10 @@ package com.example.searchmovieapp.domain.repositories.impls
 
 import com.example.searchmovieapp.data.local.FavoritesDao
 import com.example.searchmovieapp.data.local.entities.CachedFavoriteMovieEntity
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.domain.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.domain.repositories.FavoritesRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -15,7 +13,10 @@ private fun MovieEntity.toCachedFavoriteMovieEntity() =
     CachedFavoriteMovieEntity(id, title, posterPath, releaseDate, voteAverage, isUpcoming)
 
 private fun CachedFavoriteMovieEntity.toMovieEntity() =
-    MovieEntity(id, title, posterPath, releaseDate, voteAverage).apply { isFavorite = true }
+    MovieEntity(id, title, posterPath, releaseDate, voteAverage).apply {
+        isFavorite = true
+        isUpcoming = false
+    }
 
 class FavoritesRepositoryImpl @Inject constructor(
     private val favoritesDao: FavoritesDao,

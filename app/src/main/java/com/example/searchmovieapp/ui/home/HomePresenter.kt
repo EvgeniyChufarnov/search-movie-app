@@ -1,12 +1,13 @@
 package com.example.searchmovieapp.ui.home
 
 import android.os.Parcelable
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.domain.ConnectionState
 import com.example.searchmovieapp.domain.ConnectionStateEvent
 import com.example.searchmovieapp.domain.data.ResultWrapper
+import com.example.searchmovieapp.domain.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.domain.interactors.FavoritesInteractor
 import com.example.searchmovieapp.domain.interactors.MoviesInteractor
+import com.example.searchmovieapp.domain.interactors.WorkInteractor
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -14,7 +15,8 @@ import org.greenrobot.eventbus.ThreadMode
 
 class HomePresenter(
     private val moviesInteractor: MoviesInteractor,
-    private val favoritesInteractor: FavoritesInteractor
+    private val favoritesInteractor: FavoritesInteractor,
+    private val workerInteractor: WorkInteractor
 ) :
     HomeContract.Presenter {
 
@@ -166,6 +168,24 @@ class HomePresenter(
 
             getAllCachedMovies()
         }
+    }
+
+    override fun changeMovieNotificationState(movie: MovieEntity) {
+        if (!movie.isUpcoming) return
+
+        if (movie.isNotificationSet) {
+            workerInteractor.unregisterWork(movie)
+        } else {
+            val isSuccessful = workerInteractor.registerWork(movie)
+
+            if (isSuccessful) {
+                view?.showNotificationSetSuccessfullyMessage()
+            } else {
+                view?.showNotificationSetFailedMessage()
+            }
+        }
+
+        getAllCachedMovies()
     }
 
     override fun loadMoreNowPlaying() {

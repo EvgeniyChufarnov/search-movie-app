@@ -1,6 +1,6 @@
 package com.example.searchmovieapp.domain.interactors
 
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
+import com.example.searchmovieapp.domain.data.remote.entities.MovieEntity
 
 interface FavoritesInteractor {
     suspend fun addToFavorites(movie: MovieEntity)

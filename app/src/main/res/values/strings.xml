@@ -23,4 +23,11 @@
     <string name="dialog_on_refuse_message">Невозможно определить местоположение!</string>
     <string name="dialog_on_refuse_decline">Закрыть</string>
     <string name="your_location">Your location</string>
+    <string name="push_notification_channel_name">Push notifications channel</string>
+    <string name="push_notification_channel_description">This channel is for push notification</string>
+    <string name="movie_notification_channel">Movie notification channel</string>
+    <string name="movie_notification_channel_description">This channel is for notification about movie release date</string>
+    <string name="notification_content">Movie is coming out today</string>
+    <string name="notification_set_successfully_message">You will notify when movie comes out!</string>
+    <string name="notification_set_failed_message">The movie is already comes out!</string>
 </resources>

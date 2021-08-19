@@ -12,8 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.searchmovieapp.R
-import com.example.searchmovieapp.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.databinding.FragmentHomeBinding
+import com.example.searchmovieapp.domain.data.remote.entities.MovieEntity
 import com.example.searchmovieapp.ui.common.MovieListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -54,8 +54,10 @@ class HomeFragment : Fragment(),
         recyclerView.adapter = MovieListAdapter(
             false,
             presenter::navigateToMovieDetailFragment,
-            presenter::changeMovieFavoriteState
-        )
+            presenter::changeMovieFavoriteState,
+        ).apply {
+            setOnNotifyClicked(presenter::changeMovieNotificationState)
+        }
         val layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         recyclerView.layoutManager = layoutManager
@@ -112,6 +114,22 @@ class HomeFragment : Fragment(),
 
     override fun getUpcomingRecyclerViewState() =
         binding.upcomingRecyclerView.layoutManager?.onSaveInstanceState()
+
+    override fun showNotificationSetSuccessfullyMessage() {
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.notification_set_successfully_message),
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    override fun showNotificationSetFailedMessage() {
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.notification_set_failed_message),
+            Toast.LENGTH_SHORT
+        ).show()
+    }
 
     override fun showProgressBar() {
         binding.nowPlayingProgressBar.isVisible = true

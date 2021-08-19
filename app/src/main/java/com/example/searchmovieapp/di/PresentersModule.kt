@@ -3,6 +3,7 @@ package com.example.searchmovieapp.di
 import com.example.searchmovieapp.domain.interactors.FavoritesInteractor
 import com.example.searchmovieapp.domain.interactors.MovieDetailsInteractor
 import com.example.searchmovieapp.domain.interactors.MoviesInteractor
+import com.example.searchmovieapp.domain.interactors.WorkInteractor
 import com.example.searchmovieapp.ui.details.MovieDetailsContract
 import com.example.searchmovieapp.ui.details.MovieDetailsPresenter
 import com.example.searchmovieapp.ui.favorites.FavoritesContract
@@ -26,9 +27,10 @@ object PresentersModule {
     @Provides
     fun provideHomePresenter(
         moviesInteractor: MoviesInteractor,
-        favoritesInteractor: FavoritesInteractor
+        favoritesInteractor: FavoritesInteractor,
+        workInteractor: WorkInteractor
     ): HomeContract.Presenter {
-        return HomePresenter(moviesInteractor, favoritesInteractor)
+        return HomePresenter(moviesInteractor, favoritesInteractor, workInteractor)
     }
 
     @Singleton
