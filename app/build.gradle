@@ -59,6 +59,20 @@ android {
     buildFeatures {
         viewBinding true
     }
+
+    flavorDimensions 'customer'
+    productFlavors {
+        Customer1 {
+            dimension 'customer'
+            applicationIdSuffix '.customer1'
+            versionNameSuffix '-customer1'
+        }
+        Customer2 {
+            dimension 'customer'
+            applicationIdSuffix '.customer2'
+            versionNameSuffix '-customer2'
+        }
+    }
 }
 
 dependencies {
